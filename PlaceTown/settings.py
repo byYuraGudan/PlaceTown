@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+
 from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -116,17 +117,13 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
-LOCALE_DIR = os.path.join(BASE_DIR, 'localization')
-
-ugettext = lambda s: s
-
 LANGUAGES = (
     ('uk', _('Ukrainian')),
     ('en', _('English')),
     ('ru', _('Russian')),
 )
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
