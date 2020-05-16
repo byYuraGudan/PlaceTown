@@ -1,1 +1,2 @@
-./manage.py compilemessages
+./manage.py compilemessages -l en -l ru -l uk
+./manage.py collectstatic --noinput
