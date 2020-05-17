@@ -70,8 +70,8 @@ class InstitutionDetailCallback(BaseCallbackQueryHandler):
             return False
         keyboard = []
         markup = None
-        if site := detail.site:
-            keyboard.append(InlineKeyboardButton(_('site_url'), url=site))
+        if detail.site:
+            keyboard.append(InlineKeyboardButton(_('site_url'), url=detail.site))
             from backend.bot.keyboards import build_menu
             markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
         query.edit_message_text(user.get_text('about_institution').format(**detail.__dict__), reply_markup=markup)
