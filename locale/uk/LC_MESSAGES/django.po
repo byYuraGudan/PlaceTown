@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-16 16:10+0300\n"
+"POT-Creation-Date: 2020-05-17 14:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,18 +21,78 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: PlaceTown/settings.py:116
+#: PlaceTown/settings.py:123 backend/bot/handlers/callbacks.py:48
 msgid "Ukrainian"
-msgstr "Український"
+msgstr "Українська"
 
-#: PlaceTown/settings.py:117
+#: PlaceTown/settings.py:124 backend/bot/handlers/callbacks.py:49
 msgid "English"
-msgstr "Англійський"
+msgstr "Англійська"
 
-#: PlaceTown/settings.py:118
+#: PlaceTown/settings.py:125 backend/bot/handlers/callbacks.py:50
 msgid "Russian"
-msgstr "Російський"
+msgstr "Російська"
 
-#: backend/bot/handlers/commands.py:39 backend/bot/handlers/commands.py:40
+#: backend/bot/handlers/callbacks.py:58
+msgid "your_lang"
+msgstr "Вибрана {} мова"
+
+#: backend/bot/handlers/commands.py:31
+msgid "help"
+msgstr "Допомога"
+
+#: backend/bot/handlers/commands.py:38
 msgid "start"
 msgstr "Привіт {}"
+
+#: backend/bot/handlers/commands.py:45
+msgid "settings"
+msgstr "Налаштування"
+
+#: backend/bot/handlers/commands.py:52
+msgid "choose_lang"
+msgstr "Виберіть мову:"
+
+#: backend/models.py:84
+msgid "Monday"
+msgstr "Понеділок"
+
+#: backend/models.py:85
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#: backend/models.py:86
+msgid "Wednesday"
+msgstr "Середа"
+
+#: backend/models.py:87
+msgid "Thursday"
+msgstr "Четвер"
+
+#: backend/models.py:88
+msgid "Friday"
+msgstr "П'ятниця"
+
+#: backend/models.py:89
+msgid "Saturday"
+msgstr "Субота"
+
+#: backend/models.py:90
+msgid "Sunday"
+msgstr "Неділя"
+
+#: backend/models.py:126
+msgid "accepted"
+msgstr "Прийнято"
+
+#: backend/models.py:127
+msgid "waiting"
+msgstr "Очікується"
+
+#: backend/models.py:128
+msgid "rejected"
+msgstr "Відхилено"
+
+#: backend/models.py:129
+msgid "done"
+msgstr "Виконано"

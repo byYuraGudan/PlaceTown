@@ -4,12 +4,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-STATIC_ROOT = None
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
 DJANGO_TELEGRAMBOT = {
 
     'MODE': 'POLLING',

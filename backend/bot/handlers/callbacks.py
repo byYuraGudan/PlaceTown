@@ -1,6 +1,12 @@
+import logging
+
+from django.utils.translation import gettext as _, ugettext_lazy
+from telegram import Update, Bot
 from telegram.ext import CallbackQueryHandler
 
 from backend.models import TelegramUser
+
+log = logging.getLogger(__name__)
 
 
 class BaseCallbackQueryHandler(CallbackQueryHandler):
@@ -23,7 +29,7 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
             args['data'] = None
         return args
 
-    def callback(self, bot, update, user, data):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data):
         raise NotImplementedError
 
     @classmethod
@@ -35,3 +41,19 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
     def get_data(data):
         data = [item.split('=') for item in filter(bool, data.split(';')[1:])]
         return {key: int(value) if key.endswith(('id', 'use', 'back_data')) else value for key, value in data}
+
+
+class LanguageCallback(BaseCallbackQueryHandler):
+    LANGUAGE = {
+        'uk': ugettext_lazy('Ukrainian'),
+        'en': ugettext_lazy('English'),
+        'ru': ugettext_lazy('Russian'),
+    }
+    PATTERN = 'lang'
+
+    def callback(self, bot, update, user, data):
+        query = update.callback_query
+        user.lang = data.get('lang')
+        user.save()
+        query.edit_message_text(_('your_lang').format(self.LANGUAGE.get(data.get('lang'))))
+        log.debug(f'User{user} change language {user.lang}')

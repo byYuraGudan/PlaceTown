@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-16 16:10+0300\n"
+"POT-Creation-Date: 2020-05-17 14:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,18 +20,78 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: PlaceTown/settings.py:116
+#: PlaceTown/settings.py:123 backend/bot/handlers/callbacks.py:48
 msgid "Ukrainian"
 msgstr "Украинский"
 
-#: PlaceTown/settings.py:117
+#: PlaceTown/settings.py:124 backend/bot/handlers/callbacks.py:49
 msgid "English"
 msgstr "Английский"
 
-#: PlaceTown/settings.py:118
+#: PlaceTown/settings.py:125 backend/bot/handlers/callbacks.py:50
 msgid "Russian"
 msgstr "Русский"
 
-#: backend/bot/handlers/commands.py:39 backend/bot/handlers/commands.py:40
+#: backend/bot/handlers/callbacks.py:58
+msgid "your_lang"
+msgstr "Выбран {} язык"
+
+#: backend/bot/handlers/commands.py:31
+msgid "help"
+msgstr "Помощь"
+
+#: backend/bot/handlers/commands.py:38
 msgid "start"
 msgstr "Привет {}"
+
+#: backend/bot/handlers/commands.py:45
+msgid "settings"
+msgstr "Настройки"
+
+#: backend/bot/handlers/commands.py:52
+msgid "choose_lang"
+msgstr "Выберите язык:"
+
+#: backend/models.py:84
+msgid "Monday"
+msgstr "Понедельник"
+
+#: backend/models.py:85
+msgid "Tuesday"
+msgstr "Вторник"
+
+#: backend/models.py:86
+msgid "Wednesday"
+msgstr "Среда"
+
+#: backend/models.py:87
+msgid "Thursday"
+msgstr "Четверг"
+
+#: backend/models.py:88
+msgid "Friday"
+msgstr "Пятница"
+
+#: backend/models.py:89
+msgid "Saturday"
+msgstr "Субота"
+
+#: backend/models.py:90
+msgid "Sunday"
+msgstr "Воскресение"
+
+#: backend/models.py:126
+msgid "accepted"
+msgstr "Принято"
+
+#: backend/models.py:127
+msgid "waiting"
+msgstr "Ожидания"
+
+#: backend/models.py:128
+msgid "rejected"
+msgstr "Отвергнуто"
+
+#: backend/models.py:129
+msgid "done"
+msgstr "Сделанно"

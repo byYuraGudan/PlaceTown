@@ -1,8 +1,11 @@
 import calendar
 import datetime
 
+from django.conf import settings
 from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
+from backend.bot.handlers.callbacks import LanguageCallback
+from backend.models import TelegramUser
 
 MAX_INLINE_BUTTON = 60
 
@@ -20,6 +23,15 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
 def main_menu(user):
     keyboards = [user.get_translate('lego_report'), user.get_translate('list_builder_report')]
     return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
+
+
+def language(user: TelegramUser):
+    buttons = []
+    for key, lang in settings.LANGUAGES:
+        buttons.append(
+            InlBtn(f"{lang} {'✔️' if key == user.lang else ''}", callback_data=LanguageCallback.set_data(lang=f'{key}'))
+        )
+    return InlineKeyboardMarkup(build_menu(buttons))
 
 
 def back_btn(user, callback, **extra_data):

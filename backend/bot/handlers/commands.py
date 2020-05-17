@@ -1,5 +1,7 @@
-from django.utils.translation import ugettext as _, activate
+from django.utils.translation import gettext as _
 from telegram.ext import CommandHandler
+
+from backend.bot import keyboards
 from backend.models import TelegramUser
 import logging
 
@@ -41,3 +43,10 @@ class SettingsCommand(BaseCommandHandler):
 
     def callback(self, bot, update, user):
         update.effective_message.reply_text(_('settings'))
+
+
+class LanguageCommand(BaseCommandHandler):
+    COMMAND = 'lang'
+
+    def callback(self, bot, update, user):
+        update.effective_message.reply_text(_('choose_lang'), reply_markup=keyboards.language(user))
