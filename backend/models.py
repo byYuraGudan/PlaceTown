@@ -68,7 +68,7 @@ class Profile(models.Model):
         return f'{self.name} - {self.id}'
 
 
-class ProfileDetail(models.Model):
+class Institution(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 
@@ -76,6 +76,7 @@ class ProfileDetail(models.Model):
     description = models.TextField(blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True)
     email = models.CharField(max_length=100, blank=True)
+    site = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f'{self.name} - {self.id}'
@@ -92,7 +93,7 @@ class TimeWork(models.Model):
         (6, _('Sunday')),
     ]
     WEEK_DAYS_DICT = dict(WEEK_DAYS)
-    performer = models.ForeignKey(ProfileDetail, on_delete=models.CASCADE)
+    performer = models.ForeignKey(Institution, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
     week_day = models.SmallIntegerField(choices=WEEK_DAYS)
@@ -114,7 +115,7 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
-    performer = models.ForeignKey(ProfileDetail, on_delete=models.CASCADE)
+    performer = models.ForeignKey(Institution, on_delete=models.CASCADE)
     type = models.ForeignKey(ServiceType, on_delete=models.PROTECT)
 
     name = models.CharField(max_length=NAME_LENGTH)

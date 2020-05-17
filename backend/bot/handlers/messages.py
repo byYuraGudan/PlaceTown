@@ -1,8 +1,9 @@
+from django.db import models
 from django.utils.translation import gettext as _
 from telegram import Bot, Update
 from telegram.ext import MessageHandler
 
-from backend.bot import filters as bot_filters
+from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
 from backend.models import TelegramUser, Category
 
@@ -30,9 +31,14 @@ class CategoriesMessages(BaseMessageHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         from backend.bot import pagination
 
-        categories = Category.objects.all().values('id', 'name')
+        categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
+        if not categories:
+
+            update.effective_message.reply_text(_('not_choose_categories'), reply_markup=keyboards.main_menu())
+            return False
+
         paginator = pagination.CallbackPaginator(
-            categories, callback=callbacks.CategoriesCallback,
-            page_callback=callbacks.CategoriesCallback, callback_data_keys=['id']
+            categories, callback=callbacks.ProfileCallback,
+            page_callback=callbacks.CategoriesCallback, callback_data_keys=['cid']
         )
         update.effective_message.reply_text(_('choose_category'), reply_markup=paginator.inline_markup)

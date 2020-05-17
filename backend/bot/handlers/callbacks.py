@@ -1,12 +1,13 @@
 import logging
 
 from django.conf import settings
-from django.utils.translation import gettext as _, ugettext_lazy, activate
-from telegram import Update, Bot
-from telegram.ext import CallbackQueryHandler
+from django.db import models
+from django.utils.translation import gettext as _, activate
+from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler, run_async
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category
+from backend.models import TelegramUser, Category, Institution
 
 log = logging.getLogger(__name__)
 
@@ -58,14 +59,59 @@ class LanguageCallback(BaseCallbackQueryHandler):
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
 
 
-class CategoriesCallback(BaseCallbackQueryHandler):
-    PATTERN = 'cid'
+class InstitutionCallback(BaseCallbackQueryHandler):
+    PATTERN = 'pdid'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
+
+        detail = Institution.objects.filter(id=data.get('id')).first()
+        if not detail:
+            query.edit_message_text(_('not_info_about_institution'))
+            return False
+        if detail.site:
+            markup = InlineKeyboardMarkup([InlineKeyboardButton(_('site_url'), url=detail.site)])
+        query.edit_message_text(_('about_institution').format())
+
+
+class ProfileCallback(BaseCallbackQueryHandler):
+    PATTERN = 'pid'
+
+    @run_async
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
         from backend.bot import pagination
-        categories = Category.objects.all().values('id', 'name')
+        details = Institution.objects.filter(category=data.get('cid')).values('id', 'name').order_by('-id')
+
+        if not details:
+            query.edit_message_text(
+                _('not_choose_performer_for_current_category'),
+                reply_markup=query.message.reply_markup
+            )
+            return False
+
         paginator = pagination.CallbackPaginator(
-            categories, callback=self, page_callback=self, page=data.get('page', 1), callback_data_keys=['id']
+            details, callback=InstitutionCallback, page_callback=self,
+            page=data.get('page', 1), callback_data_keys=['id'],
+        )
+        query.edit_message_text(_('choose_performer'), reply_markup=paginator.inline_markup)
+
+
+class CategoriesCallback(BaseCallbackQueryHandler):
+    PATTERN = 'cid'
+
+    @run_async
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        from backend.bot import pagination
+        categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
+
+        if not categories:
+            query.edit_message_text(_('not_choose_categories'))
+            return False
+
+        paginator = pagination.CallbackPaginator(
+            categories, callback=ProfileCallback, page_callback=self, page=data.get('page', 1),
+            callback_data_keys=['cid']
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)
