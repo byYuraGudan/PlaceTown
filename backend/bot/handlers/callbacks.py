@@ -14,7 +14,6 @@ log = logging.getLogger(__name__)
 
 class BaseCallbackQueryHandler(CallbackQueryHandler):
     PATTERN = None
-    MANAGER = None
 
     def __init__(self, *args, **kwargs):
         if self.PATTERN is None:
@@ -59,8 +58,8 @@ class LanguageCallback(BaseCallbackQueryHandler):
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
 
 
-class InstitutionCallback(BaseCallbackQueryHandler):
-    PATTERN = 'pdid'
+class InstitutionDetailCallback(BaseCallbackQueryHandler):
+    PATTERN = 'iid'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
@@ -69,12 +68,16 @@ class InstitutionCallback(BaseCallbackQueryHandler):
         if not detail:
             query.edit_message_text(_('not_info_about_institution'))
             return False
-        if detail.site:
-            markup = InlineKeyboardMarkup([InlineKeyboardButton(_('site_url'), url=detail.site)])
-        query.edit_message_text(_('about_institution').format())
+        keyboard = []
+        markup = None
+        if site := detail.site:
+            keyboard.append(InlineKeyboardButton(_('site_url'), url=site))
+            from backend.bot.keyboards import build_menu
+            markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
+        query.edit_message_text(user.get_text('about_institution').format(**detail.__dict__), reply_markup=markup)
 
 
-class ProfileCallback(BaseCallbackQueryHandler):
+class InstitutionCallback(BaseCallbackQueryHandler):
     PATTERN = 'pid'
 
     @run_async
@@ -85,16 +88,16 @@ class ProfileCallback(BaseCallbackQueryHandler):
 
         if not details:
             query.edit_message_text(
-                _('not_choose_performer_for_current_category'),
+                user.get_text('not_choose_performer_for_current_category'),
                 reply_markup=query.message.reply_markup
             )
             return False
 
         paginator = pagination.CallbackPaginator(
-            details, callback=InstitutionCallback, page_callback=self,
+            details, callback=InstitutionDetailCallback, page_callback=self,
             page=data.get('page', 1), callback_data_keys=['id'],
         )
-        query.edit_message_text(_('choose_performer'), reply_markup=paginator.inline_markup)
+        query.edit_message_text(user.get_text('choose_institution'), reply_markup=paginator.inline_markup)
 
 
 class CategoriesCallback(BaseCallbackQueryHandler):
@@ -111,7 +114,7 @@ class CategoriesCallback(BaseCallbackQueryHandler):
             return False
 
         paginator = pagination.CallbackPaginator(
-            categories, callback=ProfileCallback, page_callback=self, page=data.get('page', 1),
+            categories, callback=InstitutionCallback, page_callback=self, page=data.get('page', 1),
             callback_data_keys=['cid']
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)

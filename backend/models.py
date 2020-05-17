@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-from django.utils.translation import activate
+from django.utils.translation import activate, gettext
 from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -36,6 +36,10 @@ class TelegramUser(models.Model):
         user, created = TelegramUser.objects.get_or_create(id=user.id, defaults=defaults)
         activate(user.lang)
         return user
+
+    def get_text(self, text):
+        activate(self.lang)
+        return gettext(text)
 
 
 class Category(MPTTModel, models.Model):

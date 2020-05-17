@@ -38,7 +38,7 @@ class CategoriesMessages(BaseMessageHandler):
             return False
 
         paginator = pagination.CallbackPaginator(
-            categories, callback=callbacks.ProfileCallback,
+            categories, callback=callbacks.InstitutionCallback,
             page_callback=callbacks.CategoriesCallback, callback_data_keys=['cid']
         )
         update.effective_message.reply_text(_('choose_category'), reply_markup=paginator.inline_markup)
