@@ -4,6 +4,8 @@ from django.utils.translation import activate
 from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
+from PlaceTown import settings
+
 NAME_LENGTH = 200
 
 
@@ -29,7 +31,7 @@ class TelegramUser(models.Model):
             'id': user.id,
             'username': user.username or '',
             'full_name': '{} {}'.format(user.first_name, user.last_name),
-            'lang': user.language_code or 'uk',
+            'lang': user.language_code or settings.LANGUAGE_CODE,
         }
         user, created = TelegramUser.objects.get_or_create(id=user.id, defaults=defaults)
         activate(user.lang)

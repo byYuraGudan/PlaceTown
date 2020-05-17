@@ -1,6 +1,7 @@
 import re
 
 from telegram.ext import BaseFilter
+from django.utils.translation import gettext as _
 
 from backend.models import TelegramUser
 
@@ -15,7 +16,7 @@ class RegexFilter(BaseFilter):
     def filter(self, message):
         user = TelegramUser.get_user(message.from_user)
         if message.text:
-            pattern = re.compile('{}{}'.format(self.pattern, user.get_translate(self.key)))
+            pattern = re.compile('{}{}'.format(self.pattern, _(self.key)))
             match = pattern.search(message.text)
             if match:
                 return {'matches': [match]}

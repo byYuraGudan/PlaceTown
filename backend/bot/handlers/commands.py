@@ -1,4 +1,5 @@
 from django.utils.translation import gettext as _
+from telegram import Bot, Update
 from telegram.ext import CommandHandler
 
 from backend.bot import keyboards
@@ -20,33 +21,33 @@ class BaseCommandHandler(CommandHandler):
             args['user'] = TelegramUser.get_user(update.effective_message.from_user)
         return args
 
-    def callback(self, bot, update, user):
+    def callback(self,  bot: Bot, update: Update, user: TelegramUser):
         raise NotImplementedError
 
 
 class HelpCommand(BaseCommandHandler):
     COMMAND = 'help'
 
-    def callback(self, bot, update, user):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('help'))
 
 
 class StartCommand(BaseCommandHandler):
     COMMAND = 'start'
 
-    def callback(self, bot, update, user):
-        update.effective_message.reply_text(_('start').format(user.full_name))
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        update.effective_message.reply_text(_('start').format(user.full_name), reply_markup=keyboards.main_menu())
 
 
 class SettingsCommand(BaseCommandHandler):
     COMMAND = 'settings'
 
-    def callback(self, bot, update, user):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('settings'))
 
 
 class LanguageCommand(BaseCommandHandler):
     COMMAND = 'lang'
 
-    def callback(self, bot, update, user):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('choose_lang'), reply_markup=keyboards.language(user))

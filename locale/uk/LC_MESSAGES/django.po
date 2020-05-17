@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-17 14:25+0000\n"
+"POT-Creation-Date: 2020-05-17 18:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,78 +21,90 @@ msgstr ""
 "100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
 "(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: PlaceTown/settings.py:123 backend/bot/handlers/callbacks.py:48
+#: PlaceTown/settings.py:123
 msgid "Ukrainian"
 msgstr "Українська"
 
-#: PlaceTown/settings.py:124 backend/bot/handlers/callbacks.py:49
+#: PlaceTown/settings.py:124
 msgid "English"
 msgstr "Англійська"
 
-#: PlaceTown/settings.py:125 backend/bot/handlers/callbacks.py:50
+#: PlaceTown/settings.py:125
 msgid "Russian"
 msgstr "Російська"
 
-#: backend/bot/handlers/callbacks.py:58
+#: backend/bot/handlers/callbacks.py:57
 msgid "your_lang"
 msgstr "Вибрана {} мова"
 
-#: backend/bot/handlers/commands.py:31
+#: backend/bot/handlers/callbacks.py:58
+msgid "select_you_interested"
+msgstr "Виберіть що вас цікавить"
+
+#: backend/bot/handlers/callbacks.py:71 backend/bot/handlers/messages.py:38
+msgid "choose_category"
+msgstr "Виберіть категорію:"
+
+#: backend/bot/handlers/commands.py:32
 msgid "help"
 msgstr "Допомога"
 
-#: backend/bot/handlers/commands.py:38
+#: backend/bot/handlers/commands.py:39
 msgid "start"
 msgstr "Привіт {}"
 
-#: backend/bot/handlers/commands.py:45
+#: backend/bot/handlers/commands.py:46
 msgid "settings"
 msgstr "Налаштування"
 
-#: backend/bot/handlers/commands.py:52
+#: backend/bot/handlers/commands.py:53
 msgid "choose_lang"
 msgstr "Виберіть мову:"
 
-#: backend/models.py:84
+#: backend/bot/keyboards.py:25
+msgid "categories"
+msgstr "Категорії"
+
+#: backend/models.py:86
 msgid "Monday"
 msgstr "Понеділок"
 
-#: backend/models.py:85
+#: backend/models.py:87
 msgid "Tuesday"
 msgstr "Вівторок"
 
-#: backend/models.py:86
+#: backend/models.py:88
 msgid "Wednesday"
 msgstr "Середа"
 
-#: backend/models.py:87
+#: backend/models.py:89
 msgid "Thursday"
 msgstr "Четвер"
 
-#: backend/models.py:88
+#: backend/models.py:90
 msgid "Friday"
 msgstr "П'ятниця"
 
-#: backend/models.py:89
+#: backend/models.py:91
 msgid "Saturday"
 msgstr "Субота"
 
-#: backend/models.py:90
+#: backend/models.py:92
 msgid "Sunday"
 msgstr "Неділя"
 
-#: backend/models.py:126
+#: backend/models.py:128
 msgid "accepted"
 msgstr "Прийнято"
 
-#: backend/models.py:127
+#: backend/models.py:129
 msgid "waiting"
 msgstr "Очікується"
 
-#: backend/models.py:128
+#: backend/models.py:130
 msgid "rejected"
 msgstr "Відхилено"
 
-#: backend/models.py:129
+#: backend/models.py:131
 msgid "done"
 msgstr "Виконано"

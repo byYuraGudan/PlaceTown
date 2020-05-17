@@ -1,10 +1,12 @@
 import logging
 
-from django.utils.translation import gettext as _, ugettext_lazy
+from django.conf import settings
+from django.utils.translation import gettext as _, ugettext_lazy, activate
 from telegram import Update, Bot
 from telegram.ext import CallbackQueryHandler
 
-from backend.models import TelegramUser
+from backend.bot import keyboards
+from backend.models import TelegramUser, Category
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
             args['data'] = None
         return args
 
-    def callback(self, bot: Bot, update: Update, user: TelegramUser, data):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         raise NotImplementedError
 
     @classmethod
@@ -40,20 +42,30 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
     @staticmethod
     def get_data(data):
         data = [item.split('=') for item in filter(bool, data.split(';')[1:])]
-        return {key: int(value) if key.endswith(('id', 'use', 'back_data')) else value for key, value in data}
+        return {key: int(value) if key.endswith(('id', 'use', 'back_data', 'page')) else value for key, value in data}
 
 
 class LanguageCallback(BaseCallbackQueryHandler):
-    LANGUAGE = {
-        'uk': ugettext_lazy('Ukrainian'),
-        'en': ugettext_lazy('English'),
-        'ru': ugettext_lazy('Russian'),
-    }
+    LANGUAGES = dict(settings.LANGUAGES)
     PATTERN = 'lang'
 
-    def callback(self, bot, update, user, data):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         user.lang = data.get('lang')
         user.save()
-        query.edit_message_text(_('your_lang').format(self.LANGUAGE.get(data.get('lang'))))
-        log.debug(f'User{user} change language {user.lang}')
+        activate(user.lang)
+        query.edit_message_text(_('your_lang').format(self.LANGUAGES.get(data.get('lang'))))
+        update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
+
+
+class CategoriesCallback(BaseCallbackQueryHandler):
+    PATTERN = 'cid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        from backend.bot import pagination
+        categories = Category.objects.all().values('id', 'name')
+        paginator = pagination.CallbackPaginator(
+            categories, callback=self, page_callback=self, page=data.get('page', 1), callback_data_keys=['id']
+        )
+        query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)

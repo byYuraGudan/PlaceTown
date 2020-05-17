@@ -2,6 +2,7 @@ import calendar
 import datetime
 
 from django.conf import settings
+from django.utils.translation import gettext as _
 from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 from backend.bot.handlers.callbacks import LanguageCallback
@@ -20,8 +21,8 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
     return menu
 
 
-def main_menu(user):
-    keyboards = [user.get_translate('lego_report'), user.get_translate('list_builder_report')]
+def main_menu():
+    keyboards = [_('categories')]
     return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
 
 

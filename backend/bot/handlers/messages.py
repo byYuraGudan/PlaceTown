@@ -1,6 +1,10 @@
-from telegram.ext import MessageHandler, Filters
+from django.utils.translation import gettext as _
+from telegram import Bot, Update
+from telegram.ext import MessageHandler
 
-from backend.models import TelegramUser
+from backend.bot import filters as bot_filters
+from backend.bot.handlers import callbacks
+from backend.models import TelegramUser, Category
 
 
 class BaseMessageHandler(MessageHandler):
@@ -16,5 +20,19 @@ class BaseMessageHandler(MessageHandler):
             args['user'] = TelegramUser.get_user(update.effective_message.from_user)
         return args
 
-    def callback(self, bot, update, user):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
         raise NotImplementedError
+
+
+class CategoriesMessages(BaseMessageHandler):
+    FILTERS = bot_filters.RegexFilter('^', 'categories')
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        from backend.bot import pagination
+
+        categories = Category.objects.all().values('id', 'name')
+        paginator = pagination.CallbackPaginator(
+            categories, callback=callbacks.CategoriesCallback,
+            page_callback=callbacks.CategoriesCallback, callback_data_keys=['id']
+        )
+        update.effective_message.reply_text(_('choose_category'), reply_markup=paginator.inline_markup)
