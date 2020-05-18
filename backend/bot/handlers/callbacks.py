@@ -84,8 +84,9 @@ class InstitutionCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        details = Institution.objects.filter(category=data.get('cid')).values('id', 'name').order_by('-id')
-
+        log.info(f'Category - {data.get("cid")}')
+        details = Institution.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
+        log.info(f'Count - {details.count()}')
         if not details:
             query.edit_message_text(
                 user.get_text('not_choose_performer_for_current_category'),
