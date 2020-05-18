@@ -81,7 +81,6 @@ class InstitutionDetailCallback(BaseCallbackQueryHandler):
 class InstitutionCallback(BaseCallbackQueryHandler):
     PATTERN = 'iid'
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
@@ -105,7 +104,6 @@ class InstitutionCallback(BaseCallbackQueryHandler):
 class CategoriesCallback(BaseCallbackQueryHandler):
     PATTERN = 'cid'
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
