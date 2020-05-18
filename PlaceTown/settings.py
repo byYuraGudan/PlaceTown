@@ -155,6 +155,7 @@ DJANGO_TELEGRAMBOT = {
     'BOTS': [
         {
             'TOKEN': '1152192508:AAEkAl0h1m7GZzUov4UFTw4tSVypEirUIhU',
+            'ASYNC_WORKERS': 4,
         },
     ],
 }

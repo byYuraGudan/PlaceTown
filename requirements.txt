@@ -7,7 +7,7 @@ Django==3.0.6
 django-extensions==2.2.9
 django-js-asset==1.2.2
 django-mptt==0.11.0
-django-telegrambot==1.0.1
+git+https://github.com/byYuraGudan/django-telegrambot.git
 future==0.18.2
 gunicorn==20.0.4
 psycopg2==2.8.5

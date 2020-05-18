@@ -81,12 +81,13 @@ class InstitutionDetailCallback(BaseCallbackQueryHandler):
 class InstitutionCallback(BaseCallbackQueryHandler):
     PATTERN = 'iid'
 
+    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        print(f'Category - {data.get("cid")}')
+        log.info(f'Category - {data.get("cid")}')
         details = Institution.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
-        print(f'Count - {details.count()}')
+        log.info(f'Count - {details.count()}')
         if not details:
             query.edit_message_text(
                 user.get_text('not_choose_performer_for_current_category'),
@@ -104,12 +105,12 @@ class InstitutionCallback(BaseCallbackQueryHandler):
 class CategoriesCallback(BaseCallbackQueryHandler):
     PATTERN = 'cid'
 
+    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        print('lalala')
+        log.info('Category!!!')
         categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
-        print(categories)
         if not categories:
             query.edit_message_text(_('not_choose_categories'))
             return False

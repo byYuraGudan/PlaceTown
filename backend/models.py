@@ -82,6 +82,9 @@ class Institution(models.Model):
     email = models.CharField(max_length=100, blank=True)
     site = models.CharField(max_length=255, blank=True)
 
+    # longitude = models.FloatField(null=True, blank=True, default=None)
+    # latitude = models.FloatField(null=True, blank=True, default=None)
+
     def __str__(self):
         return f'{self.name} - {self.id}'
 
