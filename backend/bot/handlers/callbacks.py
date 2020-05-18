@@ -37,6 +37,7 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
     @classmethod
     def set_data(cls, **kwargs):
         data = list('{}={}'.format(key, value) for key, value in kwargs.items())
+        print(f'{cls} - {cls.PATTERN};{";".join(data)}')
         return f'{cls.PATTERN};{";".join(data)}'
 
     @staticmethod
@@ -59,7 +60,7 @@ class LanguageCallback(BaseCallbackQueryHandler):
 
 
 class InstitutionDetailCallback(BaseCallbackQueryHandler):
-    PATTERN = 'iid'
+    PATTERN = 'did'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
@@ -78,15 +79,15 @@ class InstitutionDetailCallback(BaseCallbackQueryHandler):
 
 
 class InstitutionCallback(BaseCallbackQueryHandler):
-    PATTERN = 'pid'
+    PATTERN = 'iid'
 
     @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        log.info(f'Category - {data.get("cid")}')
+        print(f'Category - {data.get("cid")}')
         details = Institution.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
-        log.info(f'Count - {details.count()}')
+        print(f'Count - {details.count()}')
         if not details:
             query.edit_message_text(
                 user.get_text('not_choose_performer_for_current_category'),
@@ -108,8 +109,9 @@ class CategoriesCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
+        print('lalala')
         categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
-
+        print(categories)
         if not categories:
             query.edit_message_text(_('not_choose_categories'))
             return False
