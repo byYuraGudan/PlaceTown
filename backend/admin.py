@@ -8,13 +8,13 @@ class ServiceInline(admin.TabularInline):
     fk_name = 'performer'
 
 
-class InstitutionInline(admin.TabularInline):
-    model = back_models.Institution
+class CompanyInline(admin.TabularInline):
+    model = back_models.Company
     fk_name = 'profile'
 
 
-class InstitutionCategoryInline(admin.TabularInline):
-    model = back_models.Institution
+class CompanyCategoryInline(admin.TabularInline):
+    model = back_models.Company
     fk_name = 'category'
 
 
@@ -48,7 +48,7 @@ class ServiceAdmin(admin.ModelAdmin):
 @admin.register(back_models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     inlines = [
-        InstitutionInline
+        CompanyInline
     ]
 
 
@@ -57,8 +57,8 @@ class GradeAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(back_models.Institution)
-class InstitutionAdmin(admin.ModelAdmin):
+@admin.register(back_models.Company)
+class CompanyAdmin(admin.ModelAdmin):
     inlines = [
         ServiceInline, TimeWorkTabular
     ]
@@ -67,7 +67,7 @@ class InstitutionAdmin(admin.ModelAdmin):
 @admin.register(back_models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     inlines = [
-        InstitutionCategoryInline
+        CompanyCategoryInline
     ]
 
 

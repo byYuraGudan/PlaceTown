@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext as _
 from telegram import Bot, Update
-from telegram.ext import MessageHandler
+from telegram.ext import MessageHandler, Filters
 
 from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
@@ -38,7 +38,23 @@ class CategoriesMessages(BaseMessageHandler):
             return False
 
         paginator = pagination.CallbackPaginator(
-            categories, callback=callbacks.InstitutionCallback,
+            categories, callback=callbacks.CompaniesCallback,
             page_callback=callbacks.CategoriesCallback, callback_data_keys=['cid']
         )
         update.effective_message.reply_text(_('choose_category'), reply_markup=paginator.inline_markup)
+
+
+class LocationMessages(BaseMessageHandler):
+    FILTERS = Filters.location
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        pass
+
+
+def unknown(bot, update):
+    text = 'Незрозуміла команда. Спробуйте ще раз. ️😊'
+    update.message.reply_text(text)
+    return 'unknown'
+
+
+unknown_message = MessageHandler(Filters.all, unknown)

@@ -3,6 +3,7 @@ import logging
 from django_telegrambot.apps import DjangoTelegramBot
 
 from backend.bot.handlers import all_commands, all_messages, all_callback_queries, errors as error_handlers
+from backend.bot.handlers.messages import unknown_message
 
 logger = logging.getLogger(__name__)
 
@@ -17,4 +18,5 @@ def main():
     logger.info("Loading handlers for telegram bot")
     dp = DjangoTelegramBot.dispatcher
     init_handler(dp, all_commands, all_messages, all_callback_queries)
+    dp.add_handler(unknown_message)
     dp.add_error_handler(error_handlers.error)

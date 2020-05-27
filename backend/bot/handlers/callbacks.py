@@ -7,7 +7,7 @@ from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler, run_async
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Institution
+from backend.models import TelegramUser, Category, Company
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,6 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
     @classmethod
     def set_data(cls, **kwargs):
         data = list('{}={}'.format(key, value) for key, value in kwargs.items())
-        print(f'{cls} - {cls.PATTERN};{";".join(data)}')
         return f'{cls.PATTERN};{";".join(data)}'
 
     @staticmethod
@@ -59,36 +58,35 @@ class LanguageCallback(BaseCallbackQueryHandler):
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
 
 
-class InstitutionDetailCallback(BaseCallbackQueryHandler):
+class CompanyDetailCallback(BaseCallbackQueryHandler):
     PATTERN = 'did'
 
+    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
 
-        detail = Institution.objects.filter(id=data.get('id')).first()
-        if not detail:
+        company = Company.objects.filter(id=data.get('id')).first()
+        if not company:
             query.edit_message_text(_('not_info_about_institution'))
             return False
         keyboard = []
         markup = None
-        if detail.site:
-            keyboard.append(InlineKeyboardButton(_('site_url'), url=detail.site))
+        if company.site:
+            keyboard.append(InlineKeyboardButton(_('site_url'), url=company.site))
             from backend.bot.keyboards import build_menu
             markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
-        query.edit_message_text(user.get_text('about_institution').format(**detail.__dict__), reply_markup=markup)
+        query.edit_message_text(user.get_text('about_institution').format(**company.__dict__), reply_markup=markup)
 
 
-class InstitutionCallback(BaseCallbackQueryHandler):
+class CompaniesCallback(BaseCallbackQueryHandler):
     PATTERN = 'iid'
 
     @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        log.info(f'Category - {data.get("cid")}')
-        details = Institution.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
-        log.info(f'Count - {details.count()}')
-        if not details:
+        companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
+        if not companies:
             query.edit_message_text(
                 user.get_text('not_choose_performer_for_current_category'),
                 reply_markup=query.message.reply_markup
@@ -96,7 +94,7 @@ class InstitutionCallback(BaseCallbackQueryHandler):
             return False
 
         paginator = pagination.CallbackPaginator(
-            details, callback=InstitutionDetailCallback, page_callback=self,
+            companies, callback=CompanyDetailCallback, page_callback=self,
             page=data.get('page', 1), callback_data_keys=['id'],
         )
         query.edit_message_text(user.get_text('choose_institution'), reply_markup=paginator.inline_markup)
@@ -109,14 +107,13 @@ class CategoriesCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        log.info('Category!!!')
         categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
         if not categories:
             query.edit_message_text(_('not_choose_categories'))
             return False
 
         paginator = pagination.CallbackPaginator(
-            categories, callback=InstitutionCallback, page_callback=self, page=data.get('page', 1),
+            categories, callback=CompaniesCallback, page_callback=self, page=data.get('page', 1),
             callback_data_keys=['cid']
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)
