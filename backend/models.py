@@ -104,7 +104,7 @@ class TimeWork(models.Model):
         (6, _('Sunday')),
     ]
     WEEK_DAYS_DICT = dict(WEEK_DAYS)
-    performer = models.ForeignKey(Company, on_delete=models.CASCADE)
+    performer = models.ForeignKey(Company, related_name='time_works', on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
     week_day = models.SmallIntegerField(choices=WEEK_DAYS)

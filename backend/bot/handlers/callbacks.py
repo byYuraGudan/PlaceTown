@@ -7,7 +7,7 @@ from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, Pa
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company
+from backend.models import TelegramUser, Category, Company, TimeWork
 
 log = logging.getLogger(__name__)
 
@@ -62,6 +62,7 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
     PATTERN = 'location'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
         company = Company.objects.filter(id=data.get('company_id')).first()
         if not company:
             update.effective_message.reply_text(_('company_doesnt_exists'))
@@ -69,11 +70,8 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
         if not company.latitude and company.longitude:
             update.effective_message.reply_text(_('company_has_not_info_location'))
             return
-        message = update.effective_message.reply_location(company.longitude, company.latitude)
-        update.effective_message.reply_text(
-            _('location_of_company').format(name=company.name),
-            reply_to_message_id=message.message_id
-        )
+        update.effective_message.reply_location(company.longitude, company.latitude)
+        query.answer(_('location_of_company').format(name=company.name))
 
 
 class CompanyDetailCallback(BaseCallbackQueryHandler):
@@ -109,8 +107,24 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
             text += f"\n📞: {company.contact}"
         if company.email:
             text += f"\n📧: {company.email}"
+        text_work_days = f"\n{_('work_schedule')} "
+        if company.time_works.exists():
+            work_week_days = company.time_works \
+                .exclude(is_lunch=True)\
+                .values('week_day', 'start_time', 'end_time') \
+                .order_by('week_day')
 
-        query.edit_message_text(text, reply_markup=markup, parse_mode=ParseMode.MARKDOWN)
+            for week in work_week_days:
+                text_work_days += "\n{day} {start} - {end}".format(
+                    day=TimeWork.WEEK_DAYS_DICT.get(week['week_day']),
+                    start=week['start_time'].strftime("%H:%M"),
+                    end=week['end_time'].strftime("%H:%M"),
+                )
+        else:
+            text_work_days += _('no_info_available')
+        text += f"\n{text_work_days}"
+
+        query.edit_message_text(text, reply_markup=markup, parse_mode=ParseMode.HTML)
 
 
 class CompaniesCallback(BaseCallbackQueryHandler):
