@@ -41,6 +41,9 @@ class TelegramUser(models.Model):
         activate(self.lang)
         return gettext(text)
 
+    def activate(self):
+        activate(self.lang)
+
 
 class Category(MPTTModel, models.Model):
     name = models.CharField(max_length=NAME_LENGTH)

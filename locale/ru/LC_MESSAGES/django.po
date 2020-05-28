@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-17 19:59+0000\n"
+"POT-Creation-Date: 2020-05-28 22:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,39 +32,63 @@ msgstr "Английский"
 msgid "Russian"
 msgstr "Русский"
 
-#: backend/bot/handlers/callbacks.py:59
+#: backend/bot/handlers/callbacks.py:57
 msgid "your_lang"
 msgstr "Выбран {} язык"
 
-#: backend/bot/handlers/callbacks.py:60
+#: backend/bot/handlers/callbacks.py:58
 msgid "select_you_interested"
 msgstr "Выберите что вас интересует"
 
-#: backend/bot/handlers/callbacks.py:71
-msgid "not_info_about_institution"
+#: backend/bot/handlers/callbacks.py:67
+msgid "company_doesnt_exists"
+msgstr "Информация о заведении отсутствует."
+
+#: backend/bot/handlers/callbacks.py:70
+msgid "company_has_not_info_location"
+msgstr "К сожалению заведение не указал местонахождения."
+
+#: backend/bot/handlers/callbacks.py:74
+msgid "location_of_company"
+msgstr "Местонахождение \"{name}\""
+
+#: backend/bot/handlers/callbacks.py:88
+msgid "not_info_about_company"
 msgstr "Нет информации о данном заведение. Выберите другое заведение."
 
-#: backend/bot/handlers/callbacks.py:75
+#: backend/bot/handlers/callbacks.py:94
 msgid "site_url"
 msgstr "Ссылки на сайт"
 
-#: backend/bot/handlers/callbacks.py:78
-msgid "about_institution"
-msgstr "✏️Назва заведения {name} \nДияльнисть заведения {description} \n📍Мисцезнаходження заведения \n📞 {contact} \n📧 {email}"
+#: backend/bot/handlers/callbacks.py:98
+msgid "location"
+msgstr "📍Местонахождение"
 
-#: backend/bot/handlers/callbacks.py:92
+#: backend/bot/handlers/callbacks.py:103
+msgid "about_company"
+msgstr ""
+"✏️*Назва заведения:* {name} \n"
+"*Про заведение:* {description}"
+
+#: backend/bot/handlers/callbacks.py:103
+msgid "no_info_available"
+msgstr "Нет данных"
+
+#: backend/bot/handlers/callbacks.py:117
 msgid "not_choose_performer_for_current_category"
-msgstr "Нет информации о заведениях данной категории. Попробуйте выбрать другую категорию."
+msgstr ""
+"Нет информации о заведениях данной категории. Попробуйте выбрать другую "
+"категорию."
 
-#: backend/bot/handlers/callbacks.py:101
-msgid "choose_institution"
+#: backend/bot/handlers/callbacks.py:126
+msgid "choose_company"
 msgstr "Выберите заведение:"
 
-#: backend/bot/handlers/callbacks.py:114 backend/bot/handlers/messages.py:37
+#: backend/bot/handlers/callbacks.py:137 backend/bot/handlers/messages.py:36
 msgid "not_choose_categories"
 msgstr "К сожалению нет ни одной категории."
 
-#: backend/bot/handlers/callbacks.py:121 backend/bot/handlers/messages.py:44
+#: backend/bot/handlers/callbacks.py:144 backend/bot/handlers/messages.py:43
 msgid "choose_category"
 msgstr "Выберите категорию:"
 
@@ -88,46 +112,46 @@ msgstr "Выберите язык:"
 msgid "categories"
 msgstr "Категории"
 
-#: backend/models.py:87
+#: backend/models.py:98
 msgid "Monday"
 msgstr "Понедельник"
 
-#: backend/models.py:88
+#: backend/models.py:99
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: backend/models.py:89
+#: backend/models.py:100
 msgid "Wednesday"
 msgstr "Среда"
 
-#: backend/models.py:90
+#: backend/models.py:101
 msgid "Thursday"
 msgstr "Четверг"
 
-#: backend/models.py:91
+#: backend/models.py:102
 msgid "Friday"
 msgstr "Пятница"
 
-#: backend/models.py:92
+#: backend/models.py:103
 msgid "Saturday"
 msgstr "Субота"
 
-#: backend/models.py:93
+#: backend/models.py:104
 msgid "Sunday"
 msgstr "Воскресение"
 
-#: backend/models.py:129
+#: backend/models.py:140
 msgid "accepted"
 msgstr "Принято"
 
-#: backend/models.py:130
+#: backend/models.py:141
 msgid "waiting"
 msgstr "Ожидания"
 
-#: backend/models.py:131
+#: backend/models.py:142
 msgid "rejected"
 msgstr "Отвергнуто"
 
-#: backend/models.py:132
+#: backend/models.py:143
 msgid "done"
 msgstr "Сделанно"

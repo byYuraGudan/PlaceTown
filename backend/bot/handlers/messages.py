@@ -33,7 +33,6 @@ class CategoriesMessages(BaseMessageHandler):
 
         categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
         if not categories:
-
             update.effective_message.reply_text(_('not_choose_categories'), reply_markup=keyboards.main_menu())
             return False
 
@@ -48,7 +47,7 @@ class LocationMessages(BaseMessageHandler):
     FILTERS = Filters.location
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
-        pass
+        print(update.effective_message.location.__dict__)
 
 
 def unknown(bot, update):

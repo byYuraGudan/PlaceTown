@@ -3,8 +3,8 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext as _, activate
-from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, run_async
+from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
 from backend.models import TelegramUser, Category, Company
@@ -58,37 +58,72 @@ class LanguageCallback(BaseCallbackQueryHandler):
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
 
 
+class CompanyLocationCallback(BaseCallbackQueryHandler):
+    PATTERN = 'location'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        company = Company.objects.filter(id=data.get('company_id')).first()
+        if not company:
+            update.effective_message.reply_text(_('company_doesnt_exists'))
+            return
+        if not company.latitude and company.longitude:
+            update.effective_message.reply_text(_('company_has_not_info_location'))
+            return
+        message = update.effective_message.reply_location(company.longitude, company.latitude)
+        update.effective_message.reply_text(
+            _('location_of_company').format(name=company.name),
+            reply_to_message_id=message.message_id
+        )
+
+
 class CompanyDetailCallback(BaseCallbackQueryHandler):
     PATTERN = 'did'
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        user.activate()
         query = update.callback_query
 
         company = Company.objects.filter(id=data.get('id')).first()
         if not company:
-            query.edit_message_text(_('not_info_about_institution'))
+            query.edit_message_text(_('not_info_about_company'))
             return False
-        keyboard = []
-        markup = None
+
+        keyboard, markup = [], None
+
         if company.site:
             keyboard.append(InlineKeyboardButton(_('site_url'), url=company.site))
+
+        if company.longitude and company.latitude:
+            callback = CompanyLocationCallback.set_data(company_id=company.id)
+            keyboard.append(InlineKeyboardButton(_('location'), callback_data=callback))
+
+        if keyboard:
             from backend.bot.keyboards import build_menu
             markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
-        query.edit_message_text(user.get_text('about_institution').format(**company.__dict__), reply_markup=markup)
+
+        text = _('about_company').format(name=company.name, description=company.description or _('no_info_available'))
+
+        if company.address:
+            text += f"\n🏢: {company.address}"
+        if company.contact:
+            text += f"\n📞: {company.contact}"
+        if company.email:
+            text += f"\n📧: {company.email}"
+
+        query.edit_message_text(text, reply_markup=markup, parse_mode=ParseMode.MARKDOWN)
 
 
 class CompaniesCallback(BaseCallbackQueryHandler):
     PATTERN = 'iid'
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        user.activate()
         query = update.callback_query
         from backend.bot import pagination
         companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
         if not companies:
             query.edit_message_text(
-                user.get_text('not_choose_performer_for_current_category'),
+                _('not_choose_performer_for_current_category'),
                 reply_markup=query.message.reply_markup
             )
             return False
@@ -97,13 +132,12 @@ class CompaniesCallback(BaseCallbackQueryHandler):
             companies, callback=CompanyDetailCallback, page_callback=self,
             page=data.get('page', 1), callback_data_keys=['id'],
         )
-        query.edit_message_text(user.get_text('choose_institution'), reply_markup=paginator.inline_markup)
+        query.edit_message_text(_('choose_company'), reply_markup=paginator.inline_markup)
 
 
 class CategoriesCallback(BaseCallbackQueryHandler):
     PATTERN = 'cid'
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
