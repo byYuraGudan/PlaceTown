@@ -1,3 +1,5 @@
+from typing import List
+
 from django.core.paginator import Paginator
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -41,11 +43,13 @@ class CallbackPaginator(BasePaginator):
     def __init__(
             self, data, callback, page_callback,
             page: int = 1, page_size: int = PAGE_SIZE,
-            title_pattern='{name}', callback_data_keys=None
+            title_pattern='{name}', callback_data_keys: List[str] = None,
+            page_params: dict = None
     ):
 
         super(CallbackPaginator, self).__init__(data, page, page_size, title_pattern)
         self._page_callback = page_callback
+        self._page_params = page_params or {}
         self._callback_data_keys = callback_data_keys or ['id']
         self._callback = callback
 
@@ -58,7 +62,7 @@ class CallbackPaginator(BasePaginator):
                 keyboard_page.append(
                     InlineKeyboardButton(
                         self.current_page_label.format(page) if self._page == page else str(page),
-                        callback_data=self._page_callback.set_data(page=page))
+                        callback_data=self._page_callback.set_data(page=page, **self._page_params))
                 )
         else:
             keyboard_page = self._build_multi_pages()
@@ -93,16 +97,16 @@ class CallbackPaginator(BasePaginator):
             keyboard_list.append(
                 InlineKeyboardButton(
                     self.current_page_label.format(page) if self._page == page else str(page),
-                    callback_data=self._page_callback.set_data(page=page)
+                    callback_data=self._page_callback.set_data(page=page, **self._page_params)
                 )
             )
         keyboard_list.extend([
             InlineKeyboardButton(
                 self.next_page_label.format(count),
-                callback_data=self._page_callback.set_data(page=count)),
+                callback_data=self._page_callback.set_data(page=count, **self._page_params)),
             InlineKeyboardButton(
                 str(self.page_count),
-                callback_data=self._page_callback.set_data(page=self.page_count))
+                callback_data=self._page_callback.set_data(page=self.page_count, **self._page_params))
         ])
         return keyboard_list
 
@@ -112,14 +116,14 @@ class CallbackPaginator(BasePaginator):
             InlineKeyboardButton(self.first_page_label.format(1), callback_data=self._page_callback.set_data(page=1)),
             InlineKeyboardButton(
                 self.previous_page_label.format(self.page_count - 3),
-                callback_data=self._page_callback.set_data(page=self.page_count - 3)
+                callback_data=self._page_callback.set_data(page=self.page_count - 3, **self._page_params)
             )
         ])
         for page in range(self.page_count - 2, self.page_count + 1):
             keyboard_list.append(
                 InlineKeyboardButton(
                     self.current_page_label.format(page) if self._page == page else str(page),
-                    callback_data=self._page_callback.set_data(page=page)
+                    callback_data=self._page_callback.set_data(page=page, **self._page_params)
                 )
             )
         return keyboard_list
@@ -128,22 +132,22 @@ class CallbackPaginator(BasePaginator):
         return [
             InlineKeyboardButton(
                 self.first_page_label.format(1),
-                callback_data=self._page_callback.set_data(page=1)
+                callback_data=self._page_callback.set_data(page=1, **self._page_params)
             ),
             InlineKeyboardButton(
                 self.previous_page_label.format(self._page - 1),
-                callback_data=self._page_callback.set_data(page=self._page - 1)
+                callback_data=self._page_callback.set_data(page=self._page - 1, **self._page_params)
             ),
             InlineKeyboardButton(
                 self.current_page_label.format(self._page),
-                callback_data=self._page_callback.set_data(page=self._page)),
+                callback_data=self._page_callback.set_data(page=self._page, **self._page_params)),
             InlineKeyboardButton(
                 self.next_page_label.format(self._page + 1),
-                callback_data=self._page_callback.set_data(page=self._page + 1)
+                callback_data=self._page_callback.set_data(page=self._page + 1, **self._page_params)
             ),
             InlineKeyboardButton(
                 self.last_page_label.format(self.page_count),
-                callback_data=self._page_callback.set_data(page=self.page_count)
+                callback_data=self._page_callback.set_data(page=self.page_count, **self._page_params)
             )
         ]
 

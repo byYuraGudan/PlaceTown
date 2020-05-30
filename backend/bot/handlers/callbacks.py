@@ -7,7 +7,7 @@ from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, Pa
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company, TimeWork
+from backend.models import TelegramUser, Category, Company, TimeWork, Service
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +74,41 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
         query.answer(_('location_of_company').format(name=company.name))
 
 
+class ServiceCompanyCallback(BaseCallbackQueryHandler):
+    PATTERN = 'ssid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        print(data)
+        query = update.callback_query
+        service = Service.objects.filter(id=data.get('id')).first()
+        if not service:
+            query.answer(_('not_info_about_services_of_company'))
+            return False
+
+
+class ServicesPaginatorCallback(BaseCallbackQueryHandler):
+    PATTERN = 'services'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        user.activate()
+        query = update.callback_query
+        services = Service.objects.filter(performer_id=data.get('cid')).values('id', 'name').order_by('name')
+        if not services:
+            query.answer(_('not_info_about_services_of_company'))
+            CompanyDetailCallback.callback(self, bot, update, user, {'id': data.get('id')})
+            return False
+
+        from backend.bot import pagination
+        paginator = pagination.CallbackPaginator(
+            services, ServiceCompanyCallback, self, page=data.get('page', 1), page_size=2,
+            page_params={'cid': data.get('cid')}
+        )
+        markup = paginator.inline_markup
+        back_btn = [InlineKeyboardButton(_('back'), callback_data=CompanyDetailCallback.set_data(id=data.get('cid')))]
+        markup.inline_keyboard.append(back_btn)
+        query.edit_message_text(_('choose_services_of_company'), reply_markup=markup)
+
+
 class CompanyDetailCallback(BaseCallbackQueryHandler):
     PATTERN = 'did'
 
@@ -95,19 +130,28 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
             callback = CompanyLocationCallback.set_data(company_id=company.id)
             keyboard.append(InlineKeyboardButton(_('location'), callback_data=callback))
 
+        if company.services.exists():
+            callback = ServicesPaginatorCallback.set_data(cid=company.id)
+            keyboard.append(InlineKeyboardButton(_('services'), callback_data=callback))
+
         if keyboard:
             from backend.bot.keyboards import build_menu
             markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
 
         text = _('about_company').format(name=company.name, description=company.description or _('no_info_available'))
 
+        if company.grades.filter(mark__isnull=False).exists():
+            grade_mark = company.grades.filter(mark__isnull=False) \
+                .aggregate(models.Avg('mark')) \
+                .get('mark__avg', 0)
+            text += f"\n⭐️: {round(grade_mark, 2)}/10"
         if company.address:
             text += f"\n🏢: {company.address}"
         if company.contact:
             text += f"\n📞: {company.contact}"
         if company.email:
             text += f"\n📧: {company.email}"
-        text_work_days = f"\n{_('work_schedule')} "
+        text_work_days = "\n{}".format(_('work_schedule'))
         if company.time_works.exists():
             work_week_days = company.time_works \
                 .exclude(is_lunch=True)\

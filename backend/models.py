@@ -117,7 +117,7 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
-    performer = models.ForeignKey(Company, on_delete=models.CASCADE)
+    performer = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
     type = models.ForeignKey(ServiceType, on_delete=models.PROTECT)
 
     name = models.CharField(max_length=NAME_LENGTH)
