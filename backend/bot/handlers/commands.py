@@ -36,7 +36,7 @@ class StartCommand(BaseCommandHandler):
     COMMAND = 'start'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
-        update.effective_message.reply_text(_('start').format(user.full_name), reply_markup=keyboards.main_menu())
+        update.effective_message.reply_text(_('start').format(user.full_name), reply_markup=keyboards.main_menu(user))
 
 
 class SettingsCommand(BaseCommandHandler):

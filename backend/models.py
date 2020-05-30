@@ -56,17 +56,8 @@ class Category(MPTTModel, models.Model):
         return f'{self.name} - {self.id}'
 
 
-class Grade(models.Model):
-    target_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='target')
-    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='reviewer')
-
-    mark = models.SmallIntegerField()
-    comment = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-
 class Profile(models.Model):
-    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(TelegramUser, related_name='profile', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=NAME_LENGTH)
     description = models.TextField(null=True, blank=True)
@@ -76,8 +67,8 @@ class Profile(models.Model):
 
 
 class Company(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    profile = models.ForeignKey(Profile, related_name='companies',  on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='companies', on_delete=models.PROTECT)
 
     name = models.CharField(max_length=NAME_LENGTH)
     description = models.TextField(blank=True, null=True)
@@ -150,3 +141,12 @@ class Order(models.Model):
 
     created = models.DateTimeField(auto_now_add=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True, blank=True)
+
+
+class Grade(models.Model):
+    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='reviewer')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='grades')
+
+    mark = models.SmallIntegerField()
+    comment = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)

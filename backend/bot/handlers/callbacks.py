@@ -55,7 +55,7 @@ class LanguageCallback(BaseCallbackQueryHandler):
         user.save()
         activate(user.lang)
         query.edit_message_text(_('your_lang').format(self.LANGUAGES.get(data.get('lang'))))
-        update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu())
+        update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu(user))
 
 
 class CompanyLocationCallback(BaseCallbackQueryHandler):

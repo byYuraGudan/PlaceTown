@@ -25,14 +25,12 @@ class TimeWorkTabular(admin.TabularInline):
 
 class GradeInline(admin.TabularInline):
     model = back_models.Grade
-    fk_name = 'target_user'
+    fk_name = 'company'
 
 
 @admin.register(back_models.TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
-    inlines = [
-        GradeInline
-    ]
+    pass
 
 
 @admin.register(back_models.ServiceType)
@@ -60,7 +58,7 @@ class GradeAdmin(admin.ModelAdmin):
 @admin.register(back_models.Company)
 class CompanyAdmin(admin.ModelAdmin):
     inlines = [
-        ServiceInline, TimeWorkTabular
+        ServiceInline, TimeWorkTabular, GradeInline
     ]
 
 

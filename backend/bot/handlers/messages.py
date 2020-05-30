@@ -33,7 +33,7 @@ class CategoriesMessages(BaseMessageHandler):
 
         categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
         if not categories:
-            update.effective_message.reply_text(_('not_choose_categories'), reply_markup=keyboards.main_menu())
+            update.effective_message.reply_text(_('not_choose_categories'), reply_markup=keyboards.main_menu(user))
             return False
 
         paginator = pagination.CallbackPaginator(

@@ -21,7 +21,7 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
     return menu
 
 
-def main_menu():
+def main_menu(user):
     keyboards = [_('categories')]
     return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
 
