@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext as _, activate
 from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
@@ -67,6 +68,7 @@ class ProfileCallback(BaseCallbackQueryHandler):
             username = user.username or '.'.join(user.full_name.lower().split(' '))
             password = User.objects.make_random_password()
             account = User.objects.create_user(username, password=password, is_staff=True)
+            account.groups.add(Group.objects.get(name='ProfileUser'))
             Profile.objects.create(user=user, account=account, name=user.full_name)
             query.edit_message_text(
                 _('user_created_info').format(username=username, password=password),
