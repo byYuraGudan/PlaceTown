@@ -7,7 +7,7 @@ from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, Pa
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company, TimeWork, Service
+from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile
 
 log = logging.getLogger(__name__)
 
@@ -56,6 +56,25 @@ class LanguageCallback(BaseCallbackQueryHandler):
         activate(user.lang)
         query.edit_message_text(_('your_lang').format(self.LANGUAGES.get(data.get('lang'))))
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu(user))
+
+
+class ProfileCallback(BaseCallbackQueryHandler):
+    PATTERN = 'profile'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        if not hasattr(user, 'profile'):
+            username = user.username or '.'.join(user.full_name.lower().split(' '))
+            password = User.objects.make_random_password()
+            account = User.objects.create_user(username, password=password, is_staff=True)
+            Profile.objects.create(user=user, account=account, name=user.full_name)
+            query.edit_message_text(
+                _('user_created_info').format(username=username, password=password),
+                reply_markup=keyboards.site_btn(),
+                parse_mode=ParseMode.HTML,
+            )
+        else:
+            query.edit_message_text(_('profile_exists'), reply_markup=keyboards.site_btn())
 
 
 class CompanyLocationCallback(BaseCallbackQueryHandler):

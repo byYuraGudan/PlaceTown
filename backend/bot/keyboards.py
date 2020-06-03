@@ -41,6 +41,12 @@ def back_btn(user, callback, **extra_data):
     ]]
 
 
+def site_btn():
+    return InlineKeyboardMarkup(build_menu([
+        InlBtn(_('site_url'), url=settings.SITE_HOST)
+    ]))
+
+
 def gen_inline_markup(data, callback, title=None, keys=None, cols=2, extra_data=None):
     extra_data = extra_data or {}
     keys = keys or ['id', 'back_data']
@@ -95,9 +101,9 @@ def generate_calendar(user, callback, year=None, month=None, date_from=None, dat
                 )
         keyboard.append(row)
     row = []
-    row.append(InlBtn("<", callback_data=callback.set_callback_data(st='prev', year=year, month=month-1)))
+    row.append(InlBtn("<", callback_data=callback.set_callback_data(st='prev', year=year, month=month - 1)))
     row.append(InlBtn(" ", callback_data=data_ignore))
-    row.append(InlBtn(">", callback_data=callback.set_callback_data(st='next', year=year, month=month+1)))
+    row.append(InlBtn(">", callback_data=callback.set_callback_data(st='next', year=year, month=month + 1)))
     keyboard.append(row)
 
     return InlineKeyboardMarkup(keyboard)

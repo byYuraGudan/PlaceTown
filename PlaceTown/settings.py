@@ -28,6 +28,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['place-town.herokuapp.com', '*']
 
+SITE_HOST = 'https://place-town.herokuapp.com/admin/'
+
 # Application definition
 
 INSTALLED_APPS = [

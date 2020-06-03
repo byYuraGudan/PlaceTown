@@ -58,6 +58,7 @@ class Category(MPTTModel, models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(TelegramUser, related_name='profile', on_delete=models.CASCADE)
+    account = models.OneToOneField(User, related_name='profile', on_delete=models.PROTECT)
 
     name = models.CharField(max_length=NAME_LENGTH)
     description = models.TextField(null=True, blank=True)

@@ -1,10 +1,12 @@
+import logging
+
 from django.utils.translation import gettext as _
-from telegram import Bot, Update
+from telegram import Bot, Update, InlineKeyboardButton as InlKeyBtn, InlineKeyboardMarkup as InlKeyMark
 from telegram.ext import CommandHandler
 
 from backend.bot import keyboards
+from backend.bot.handlers import callbacks
 from backend.models import TelegramUser
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ class BaseCommandHandler(CommandHandler):
             args['user'] = TelegramUser.get_user(update.effective_message.from_user)
         return args
 
-    def callback(self,  bot: Bot, update: Update, user: TelegramUser):
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
         raise NotImplementedError
 
 
@@ -44,6 +46,19 @@ class SettingsCommand(BaseCommandHandler):
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('settings'))
+
+
+class ProfileCommand(BaseCommandHandler):
+    COMMAND = 'profile'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        if not hasattr(user, 'profile'):
+            markup = InlKeyMark(keyboards.build_menu([
+                InlKeyBtn(_('create_profile'), callback_data=callbacks.ProfileCallback.set_data()),
+            ]))
+            update.effective_message.reply_text(_('profile_does_not_exists'), reply_markup=markup)
+        else:
+            update.effective_message.reply_text(_('profile_exists'), reply_markup=keyboards.site_btn())
 
 
 class LanguageCommand(BaseCommandHandler):

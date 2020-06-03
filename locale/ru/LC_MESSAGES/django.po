@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-30 12:32+0000\n"
+"POT-Creation-Date: 2020-06-03 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,15 +20,15 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: PlaceTown/settings.py:123
+#: PlaceTown/settings.py:125
 msgid "Ukrainian"
 msgstr "Украинский"
 
-#: PlaceTown/settings.py:124
+#: PlaceTown/settings.py:126
 msgid "English"
 msgstr "Английский"
 
-#: PlaceTown/settings.py:125
+#: PlaceTown/settings.py:127
 msgid "Russian"
 msgstr "Русский"
 
@@ -40,91 +40,111 @@ msgstr "Выбран {} язык"
 msgid "select_you_interested"
 msgstr "Выберите что вас интересует"
 
-#: backend/bot/handlers/callbacks.py:68
+#: backend/bot/handlers/callbacks.py:71
+msgid "user_created_info"
+msgstr "Создан аккаунт, позволяет добавлять новые данные для просмотра другими пользователями.\n"
+"Доступ к администрированию данных вашего профиля."
+"\n<b>Логин:</b> {username}"
+"\n<b>Пароль:</b> {password}"
+
+#: backend/bot/handlers/callbacks.py:75 backend/bot/handlers/commands.py:63
+msgid "profile_exists"
+msgstr "У вас уже есть существующий профиль. Авторизуйтесь по ссылке ниже для администрировании своих данных."
+
+#: backend/bot/handlers/callbacks.py:85
 msgid "company_doesnt_exists"
 msgstr "Информация о заведении отсутствует."
 
-#: backend/bot/handlers/callbacks.py:71
+#: backend/bot/handlers/callbacks.py:88
 msgid "company_has_not_info_location"
 msgstr "К сожалению заведение не указал местонахождения."
 
-#: backend/bot/handlers/callbacks.py:74
+#: backend/bot/handlers/callbacks.py:91
 msgid "location_of_company"
 msgstr "Местонахождение \"{name}\""
 
-#: backend/bot/handlers/callbacks.py:85 backend/bot/handlers/callbacks.py:97
+#: backend/bot/handlers/callbacks.py:102 backend/bot/handlers/callbacks.py:114
 msgid "not_info_about_services_of_company"
 msgstr "Нет информации о данном услугах даного заведения."
 
-#: backend/bot/handlers/callbacks.py:107
+#: backend/bot/handlers/callbacks.py:124
 msgid "back"
 msgstr "⬅️ Назад"
 
-#: backend/bot/handlers/callbacks.py:109
+#: backend/bot/handlers/callbacks.py:126
 msgid "choose_services_of_company"
 msgstr "Выберите услугу:"
 
-#: backend/bot/handlers/callbacks.py:121
+#: backend/bot/handlers/callbacks.py:138
 msgid "not_info_about_company"
 msgstr "Нет информации о данном заведение. Выберите другое заведение."
 
-#: backend/bot/handlers/callbacks.py:127
+#: backend/bot/handlers/callbacks.py:144
 msgid "site_url"
 msgstr "🌐 Ссылки на сайт"
 
-#: backend/bot/handlers/callbacks.py:131
+#: backend/bot/handlers/callbacks.py:148
 msgid "location"
 msgstr "📍 Местонахождение"
 
-#: backend/bot/handlers/callbacks.py:135
+#: backend/bot/handlers/callbacks.py:152
 msgid "services"
 msgstr "📝 Услуги"
 
-#: backend/bot/handlers/callbacks.py:141
+#: backend/bot/handlers/callbacks.py:158
 msgid "about_company"
 msgstr ""
 "<b>Назва:</b> {name} \n"
 "<b>Описание:</b> {description}"
 
-#: backend/bot/handlers/callbacks.py:141 backend/bot/handlers/callbacks.py:168
+#: backend/bot/handlers/callbacks.py:158 backend/bot/handlers/callbacks.py:185
 msgid "no_info_available"
 msgstr "Нет данных"
 
-#: backend/bot/handlers/callbacks.py:154
+#: backend/bot/handlers/callbacks.py:171
 msgid "work_schedule"
 msgstr "<b>📅 График работы: </b>"
 
-#: backend/bot/handlers/callbacks.py:184
+#: backend/bot/handlers/callbacks.py:201
 msgid "not_choose_performer_for_current_category"
 msgstr ""
 "Нет информации о заведениях данной категории. Попробуйте выбрать другую "
 "категорию."
 
-#: backend/bot/handlers/callbacks.py:193
+#: backend/bot/handlers/callbacks.py:210
 msgid "choose_company"
 msgstr "Выберите заведение:"
 
-#: backend/bot/handlers/callbacks.py:204 backend/bot/handlers/messages.py:36
+#: backend/bot/handlers/callbacks.py:221 backend/bot/handlers/messages.py:36
 msgid "not_choose_categories"
 msgstr "К сожалению нет ни одной категории."
 
-#: backend/bot/handlers/callbacks.py:211 backend/bot/handlers/messages.py:43
+#: backend/bot/handlers/callbacks.py:228 backend/bot/handlers/messages.py:43
 msgid "choose_category"
 msgstr "Выберите категорию:"
 
-#: backend/bot/handlers/commands.py:32
+#: backend/bot/handlers/commands.py:36
 msgid "help"
 msgstr "Помощь"
 
-#: backend/bot/handlers/commands.py:39
+#: backend/bot/handlers/commands.py:43
 msgid "start"
 msgstr "Привет {}"
 
-#: backend/bot/handlers/commands.py:46
+#: backend/bot/handlers/commands.py:50
 msgid "settings"
 msgstr "Настройки"
 
-#: backend/bot/handlers/commands.py:53
+#: backend/bot/handlers/commands.py:59
+msgid "create_profile"
+msgstr "Создать профиль"
+
+#: backend/bot/handlers/commands.py:61
+msgid "profile_does_not_exists"
+msgstr "У вас отсутствует профиль.\n"
+"Вы можете создать профиль, который предоставит вам возможность администрировать данные."
+
+#: backend/bot/handlers/commands.py:70
 msgid "choose_lang"
 msgstr "Выберите язык:"
 
