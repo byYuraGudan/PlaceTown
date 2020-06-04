@@ -124,7 +124,11 @@ class ServicesPaginatorCallback(BaseCallbackQueryHandler):
             page_params={'cid': data.get('cid')}
         )
         markup = paginator.inline_markup
-        back_btn = [InlBtn(_('back'), callback_data=CompanyDetailCallback.set_data(id=data.get('cid')))]
+        back_btn = [
+            InlBtn(
+                _('back'),
+                callback_data=CompanyDetailCallback.set_data(id=data.get('cid'), page=data.get('page', 1))),
+        ]
         markup.inline_keyboard.append(back_btn)
         query.edit_message_text(_('choose_services_of_company'), reply_markup=markup)
 
@@ -184,7 +188,9 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
 
         from backend.bot.keyboards import build_menu
         back_btn = InlBtn(
-            _('back'), callback_data=CompaniesCallback.set_data(cid=company.category_id, page=data.get('page', 1))
+            _('back'), callback_data=CompaniesCallback.set_data(
+                cid=company.category_id, page=data.get('cp_pg', 1), ct_pg=data.get('ct_pg', 1)
+            )
         )
         markup = InlineKeyboardMarkup(build_menu(keyboard, footer_buttons=[back_btn], cols=2))
 
@@ -228,7 +234,12 @@ class CompaniesCallback(BaseCallbackQueryHandler):
         user.activate()
         query = update.callback_query
         from backend.bot import pagination
-        companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
+        companies = Company.objects.filter(category_id=data.get('cid')) \
+            .annotate(
+                cp_pg=models.Value(data.get('page', 1), output_field=models.IntegerField()),
+                ct_pg=models.Value(data.get('ct_pg', 1), output_field=models.IntegerField())
+            ) \
+            .values('id', 'cp_pg', 'ct_pg', 'name').order_by('-id')
         if not companies:
             query.edit_message_text(
                 _('not_choose_performer_for_current_category'),
@@ -238,11 +249,12 @@ class CompaniesCallback(BaseCallbackQueryHandler):
 
         paginator = pagination.CallbackPaginator(
             companies, callback=CompanyDetailCallback, page_callback=self,
-            page=data.get('page', 1), callback_data_keys=['id'], page_params={'cid': data.get('cid')}
+            page=data.get('page', 1), callback_data_keys=['id', 'cp_pg', 'ct_pg'],
+            page_params={'cid': data.get('cid'), 'ct_pg': data.get('ct_pg', 1)}
         )
         markup = paginator.inline_markup
         markup.inline_keyboard.append([
-            InlBtn(_('back'), callback_data=CategoriesCallback.set_data(id=data.get('cid'), page=data.get('page', 1))),
+            InlBtn(_('back'), callback_data=CategoriesCallback.set_data(id=data.get('cid'), page=data.get('ct_pg', 1))),
         ])
         query.edit_message_text(_('choose_company'), reply_markup=markup)
 
@@ -253,13 +265,15 @@ class CategoriesCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
+        categories = Category.objects \
+            .annotate(cid=models.F('id'), ct_pg=models.Value(data.get('page', 1), output_field=models.IntegerField())) \
+            .values('cid', 'ct_pg', 'name')
         if not categories:
             query.edit_message_text(_('not_choose_categories'))
             return False
 
         paginator = pagination.CallbackPaginator(
             categories, callback=CompaniesCallback, page_callback=self, page=data.get('page', 1),
-            callback_data_keys=['cid']
+            callback_data_keys=['cid', 'ct_pg']
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)
