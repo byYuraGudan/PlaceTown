@@ -4,11 +4,11 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext as _, activate
-from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram import Update, Bot, InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile
+from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile, Grade
 
 log = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ class LanguageCallback(BaseCallbackQueryHandler):
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu(user))
 
 
-class ProfileCallback(BaseCallbackQueryHandler):
+class ProfileCreateCallback(BaseCallbackQueryHandler):
     PATTERN = 'profile'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
@@ -99,7 +99,6 @@ class ServiceCompanyCallback(BaseCallbackQueryHandler):
     PATTERN = 'ssid'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
-        print(data)
         query = update.callback_query
         service = Service.objects.filter(id=data.get('id')).first()
         if not service:
@@ -125,9 +124,33 @@ class ServicesPaginatorCallback(BaseCallbackQueryHandler):
             page_params={'cid': data.get('cid')}
         )
         markup = paginator.inline_markup
-        back_btn = [InlineKeyboardButton(_('back'), callback_data=CompanyDetailCallback.set_data(id=data.get('cid')))]
+        back_btn = [InlBtn(_('back'), callback_data=CompanyDetailCallback.set_data(id=data.get('cid')))]
         markup.inline_keyboard.append(back_btn)
         query.edit_message_text(_('choose_services_of_company'), reply_markup=markup)
+
+
+class GradeCompanyCallback(BaseCallbackQueryHandler):
+    PATTERN = 'gr-com'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        company = Company.objects.filter(id=data.get('cid')).first()
+
+        if not company:
+            query.answer(_('not_info_about_company'))
+            return False
+
+        if data.get('mark'):
+            mark = int(data.get('mark'))
+            query.answer(_('your_mark_company_is').format(mark=mark))
+            Grade.objects.create(reviewer_user=user, company=company, mark=mark)
+            CompanyDetailCallback.callback(self, bot, update, user, {'id': company.id})
+
+        if company.grades.filter(reviewer_user=user).exists():
+            query.answer(_('you_are_grade_the_company'))
+            return False
+
+        query.edit_message_text(_('grade_the_company'), reply_markup=keyboards.grade_buttons(company))
 
 
 class CompanyDetailCallback(BaseCallbackQueryHandler):
@@ -145,19 +168,25 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
         keyboard, markup = [], None
 
         if company.site:
-            keyboard.append(InlineKeyboardButton(_('site_url'), url=company.site))
+            keyboard.append(InlBtn(_('site_url'), url=company.site))
 
         if company.longitude and company.latitude:
             callback = CompanyLocationCallback.set_data(company_id=company.id)
-            keyboard.append(InlineKeyboardButton(_('location'), callback_data=callback))
+            keyboard.append(InlBtn(_('location'), callback_data=callback))
+
+        if not company.grades.filter(reviewer_user=user).exists():
+            grade_callback = GradeCompanyCallback.set_data(cid=company.id)
+            keyboard.append(InlBtn(_('grade'), callback_data=grade_callback))
 
         if company.services.exists():
             callback = ServicesPaginatorCallback.set_data(cid=company.id)
-            keyboard.append(InlineKeyboardButton(_('services'), callback_data=callback))
+            keyboard.append(InlBtn(_('services'), callback_data=callback))
 
-        if keyboard:
-            from backend.bot.keyboards import build_menu
-            markup = InlineKeyboardMarkup(build_menu(keyboard, cols=1))
+        from backend.bot.keyboards import build_menu
+        back_btn = InlBtn(
+            _('back'), callback_data=CompaniesCallback.set_data(cid=company.category_id, page=data.get('page', 1))
+        )
+        markup = InlineKeyboardMarkup(build_menu(keyboard, footer_buttons=[back_btn], cols=2))
 
         text = _('about_company').format(name=company.name, description=company.description or _('no_info_available'))
 
@@ -165,7 +194,7 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
             grade_mark = company.grades.filter(mark__isnull=False) \
                 .aggregate(models.Avg('mark')) \
                 .get('mark__avg', 0)
-            text += f"\n⭐️: {round(grade_mark, 2)}/10"
+            text += f"\n⭐️: {round(grade_mark, 2)}/5.0"
         if company.address:
             text += f"\n🏢: {company.address}"
         if company.contact:
@@ -175,7 +204,7 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
         text_work_days = "\n{}".format(_('work_schedule'))
         if company.time_works.exists():
             work_week_days = company.time_works \
-                .exclude(is_lunch=True)\
+                .exclude(is_lunch=True) \
                 .values('week_day', 'start_time', 'end_time') \
                 .order_by('week_day')
 
@@ -209,9 +238,13 @@ class CompaniesCallback(BaseCallbackQueryHandler):
 
         paginator = pagination.CallbackPaginator(
             companies, callback=CompanyDetailCallback, page_callback=self,
-            page=data.get('page', 1), callback_data_keys=['id'],
+            page=data.get('page', 1), callback_data_keys=['id'], page_params={'cid': data.get('cid')}
         )
-        query.edit_message_text(_('choose_company'), reply_markup=paginator.inline_markup)
+        markup = paginator.inline_markup
+        markup.inline_keyboard.append([
+            InlBtn(_('back'), callback_data=CategoriesCallback.set_data(id=data.get('cid'), page=data.get('page', 1))),
+        ])
+        query.edit_message_text(_('choose_company'), reply_markup=markup)
 
 
 class CategoriesCallback(BaseCallbackQueryHandler):

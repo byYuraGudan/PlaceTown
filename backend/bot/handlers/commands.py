@@ -54,7 +54,7 @@ class ProfileCommand(BaseCommandHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         if not hasattr(user, 'profile'):
             markup = InlKeyMark(keyboards.build_menu([
-                InlKeyBtn(_('create_profile'), callback_data=callbacks.ProfileCallback.set_data()),
+                InlKeyBtn(_('create_profile'), callback_data=callbacks.ProfileCreateCallback.set_data()),
             ]))
             update.effective_message.reply_text(_('profile_does_not_exists'), reply_markup=markup)
         else:

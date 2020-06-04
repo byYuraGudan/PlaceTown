@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
-from backend.bot.handlers.callbacks import LanguageCallback
+from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback
 from backend.models import TelegramUser
 
 MAX_INLINE_BUTTON = 60
@@ -107,3 +107,11 @@ def generate_calendar(user, callback, year=None, month=None, date_from=None, dat
     keyboard.append(row)
 
     return InlineKeyboardMarkup(keyboard)
+
+
+def grade_buttons(company):
+    keyboard = [
+        InlBtn(f'{i}', callback_data=GradeCompanyCallback.set_data(mark=i, cid=company.id))
+        for i in range(1, 6)
+    ]
+    return InlineKeyboardMarkup(build_menu(keyboard, cols=5))

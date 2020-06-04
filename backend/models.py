@@ -68,7 +68,7 @@ class Profile(models.Model):
 
 
 class Company(models.Model):
-    profile = models.ForeignKey(Profile, related_name='companies',  on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, related_name='companies', on_delete=models.CASCADE)
     category = models.ForeignKey(Category, related_name='companies', on_delete=models.PROTECT)
 
     name = models.CharField(max_length=NAME_LENGTH)
@@ -145,9 +145,20 @@ class Order(models.Model):
 
 
 class Grade(models.Model):
-    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='reviewer')
+    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='grades')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='grades')
 
     mark = models.SmallIntegerField()
-    comment = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('reviewer_user', 'company',)
+
+
+class Comment(models.Model):
+    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='comments')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='comments')
+
+    text = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
