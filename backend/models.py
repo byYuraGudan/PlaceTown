@@ -114,17 +114,22 @@ class ServiceType(models.Model):
     hidden = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.name} - {self.id}'
+        return f'{self.name}'
 
 
 class Service(models.Model):
+    SERVICE_TYPE = [
+        (0, _('simple_text')),
+        (1, _('alone_order_complete'))
+    ]
     performer = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
-    type = models.ForeignKey(ServiceType, on_delete=models.PROTECT)
+    type = models.SmallIntegerField(choices=SERVICE_TYPE)
 
     name = models.CharField(max_length=NAME_LENGTH)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.name} - {self.id}'
+        return f'{self.name}'
 
 
 class Order(models.Model):
@@ -154,10 +159,13 @@ class Grade(models.Model):
     class Meta:
         unique_together = ('reviewer_user', 'company',)
 
+    def __str__(self):
+        return f'{self.company.name} - {self.mark}'
+
 
 class Comment(models.Model):
-    reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='comments')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='comments')
+    reviewer = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='comments')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='comments')
 
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)

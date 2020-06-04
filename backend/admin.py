@@ -87,7 +87,7 @@ class ProfileAdmin(admin.ModelAdmin):
 class GradeAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-        queryset = super().get_queryset(request)
+        queryset = super().get_queryset(request).prefetch_related('company')
         if hasattr(request.user, 'profile') and not request.user.is_superuser:
             return queryset.filter(company__in=request.user.profile.companies.all())
         return queryset
