@@ -75,7 +75,7 @@ class ProfileAdmin(admin.ModelAdmin):
         if hasattr(request.user, 'profile') and not request.user.is_superuser:
             return queryset.filter(id=request.user.profile.id)
         return queryset
-    
+
     def get_fields(self, request, obj=None):
         fields = super(ProfileAdmin, self).get_fields(request, obj)
         if hasattr(request.user, 'profile') and not request.user.is_superuser:
@@ -104,6 +104,17 @@ class CompanyAdmin(admin.ModelAdmin):
         if hasattr(request.user, 'profile') and not request.user.is_superuser:
             return request.user.profile.companies.all()
         return queryset
+
+    def get_fields(self, request, obj=None):
+        fields = super(CompanyAdmin, self).get_fields(request, obj)
+        if hasattr(request.user, 'profile') and not request.user.is_superuser:
+            return fields[1:]
+        return fields
+
+    def save_model(self, request, obj, form, change):
+        if hasattr(request.user, 'profile') and not request.user.is_superuser:
+            obj.profile = request.user.profile
+        super(CompanyAdmin, self).save_model(request, obj, form, change)
 
 
 @admin.register(back_models.Category)
