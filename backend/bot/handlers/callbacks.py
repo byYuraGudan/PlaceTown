@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _, activate
 from telegram import Update, Bot, InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CallbackQueryHandler
@@ -43,7 +44,7 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
     @staticmethod
     def get_data(data):
         data = [item.split('=') for item in filter(bool, data.split(';')[1:])]
-        return {key: int(value) if key.endswith(('id', 'use', 'back_data', 'page')) else value for key, value in data}
+        return {key: int(value) if key.endswith(('id', 'page')) else value for key, value in data}
 
 
 class LanguageCallback(BaseCallbackQueryHandler):
@@ -57,6 +58,36 @@ class LanguageCallback(BaseCallbackQueryHandler):
         activate(user.lang)
         query.edit_message_text(_('your_lang').format(self.LANGUAGES.get(data.get('lang'))))
         update.effective_message.reply_text(_('select_you_interested'), reply_markup=keyboards.main_menu(user))
+
+
+class FilterCallback(BaseCallbackQueryHandler):
+    PATTERN = 'filter'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        if data.get('st'):
+            status = data.pop('st')
+            if status == 'open':
+                user.options['filters']['open'] = not user.filters['open']
+                query.answer(_('open_company') + (' ✅' if user.options['filters']['open'] else ''))
+            elif status == 'nearby':
+                user.options['filters']['nearby'] = not user.filters['nearby']
+                query.answer(_('nearby_company') + (' ✅' if user.options['filters']['nearby'] else ''))
+            CompaniesCallback.callback(self, bot, update, user, data)
+        if data.get('order'):
+            order = data.pop('order')
+            if order == 'name':
+                pass
+            elif order == 'rating':
+                pass
+        user.save()
+
+
+class LocationCallback(BaseCallbackQueryHandler):
+    PATTERN = 'loc'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        print(data)
 
 
 class ProfileCreateCallback(BaseCallbackQueryHandler):
@@ -234,28 +265,49 @@ class CompaniesCallback(BaseCallbackQueryHandler):
         user.activate()
         query = update.callback_query
         from backend.bot import pagination
-        companies = Company.objects.filter(category_id=data.get('cid')) \
-            .annotate(
-                cp_pg=models.Value(data.get('page', 1), output_field=models.IntegerField()),
-                ct_pg=models.Value(data.get('ct_pg', 1), output_field=models.IntegerField())
-            ) \
-            .values('id', 'cp_pg', 'ct_pg', 'name').order_by('-id')
+        companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
+        if user.filters['open']:
+            time_now = timezone.now()
+            open_companies = TimeWork.objects.filter(
+                performer__category_id=data.get('cid'),
+                week_day=time_now.day - 1,
+                start_time__lte=time_now,
+                end_time__gte=time_now,
+            ).values('performer_id').distinct()
+            companies = companies.filter(id__in=open_companies)
+        option_keyboards = [
+            [
+                InlBtn(
+                    _('open_company') + (' ✅' if user.filters.get('open') else ''),
+                    callback_data=FilterCallback.set_data(st='open', **data)
+                ),
+                InlBtn(
+                    _('nearby_company') + (' ✅' if user.filters.get('nearby') else ''),
+                    callback_data=FilterCallback.set_data(st='nearby', **data)
+                ),
+            ],
+            [
+                InlBtn(
+                    _('back'),
+                    callback_data=CategoriesCallback.set_data(id=data.get('cid'), page=data.get('ct_pg', 1))
+                ),
+            ]
+        ]
         if not companies:
             query.edit_message_text(
                 _('not_choose_performer_for_current_category'),
-                reply_markup=query.message.reply_markup
+                reply_markup=InlineKeyboardMarkup(option_keyboards)
             )
             return False
 
         paginator = pagination.CallbackPaginator(
             companies, callback=CompanyDetailCallback, page_callback=self,
-            page=data.get('page', 1), callback_data_keys=['id', 'cp_pg', 'ct_pg'],
-            page_params={'cid': data.get('cid'), 'ct_pg': data.get('ct_pg', 1)}
+            page=data.get('page', 1), callback_data_keys=['id'],
+            page_params={'cid': data.get('cid'), 'ct_pg': data.get('ct_pg', 1)},
+            data_params={'cp_pg': data.get('page', 1), 'ct_pg': data.get('ct_pg', 1)}
         )
         markup = paginator.inline_markup
-        markup.inline_keyboard.append([
-            InlBtn(_('back'), callback_data=CategoriesCallback.set_data(id=data.get('cid'), page=data.get('ct_pg', 1))),
-        ])
+        markup.inline_keyboard.extend(option_keyboards)
         query.edit_message_text(_('choose_company'), reply_markup=markup)
 
 
@@ -265,15 +317,13 @@ class CategoriesCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
         from backend.bot import pagination
-        categories = Category.objects \
-            .annotate(cid=models.F('id'), ct_pg=models.Value(data.get('page', 1), output_field=models.IntegerField())) \
-            .values('cid', 'ct_pg', 'name')
+        categories = Category.objects.annotate(cid=models.F('id')).values('cid', 'name')
         if not categories:
             query.edit_message_text(_('not_choose_categories'))
             return False
 
         paginator = pagination.CallbackPaginator(
             categories, callback=CompaniesCallback, page_callback=self, page=data.get('page', 1),
-            callback_data_keys=['cid', 'ct_pg']
+            callback_data_keys=['cid'], data_params={'ct_pg': data.get('page', 1)}
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)

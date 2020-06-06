@@ -3,10 +3,11 @@ import datetime
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, \
+    ReplyKeyboardRemove
 
-from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback
-from backend.models import TelegramUser
+from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback, FilterCallback
+from backend.models import TelegramUser, Company
 
 MAX_INLINE_BUTTON = 60
 
@@ -109,9 +110,26 @@ def generate_calendar(user, callback, year=None, month=None, date_from=None, dat
     return InlineKeyboardMarkup(keyboard)
 
 
-def grade_buttons(company):
+def grade_buttons(company: Company):
     keyboard = [
         InlBtn(f'{i}', callback_data=GradeCompanyCallback.set_data(mark=i, cid=company.id))
         for i in range(1, 6)
     ]
     return InlineKeyboardMarkup(build_menu(keyboard, cols=5))
+
+
+def filter_markup(user: TelegramUser):
+    keyboard = [
+        InlBtn(_('by_rating'), callback_data=FilterCallback.set_data(order='rating')),
+        InlBtn(_('by_alphabet'), callback_data=FilterCallback.set_data(order='name'))
+    ]
+    return InlineKeyboardMarkup(build_menu(keyboard, cols=1))
+
+
+def settings_markup(user: TelegramUser):
+    keyboards = [
+        KeyboardButton(_('get_location'), request_location=True),
+    ]
+    if not user.phone:
+        keyboards.append(KeyboardButton(_('get_phone'), request_contact=True))
+    return ReplyKeyboardMarkup(build_menu(keyboards, cols=1))

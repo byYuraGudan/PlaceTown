@@ -44,12 +44,13 @@ class CallbackPaginator(BasePaginator):
             self, data, callback, page_callback,
             page: int = 1, page_size: int = PAGE_SIZE,
             title_pattern='{name}', callback_data_keys: List[str] = None,
-            page_params: dict = None
+            page_params: dict = None, data_params: dict = None,
     ):
 
         super(CallbackPaginator, self).__init__(data, page, page_size, title_pattern)
         self._page_callback = page_callback
         self._page_params = page_params or {}
+        self._data_params = data_params or {}
         self._callback_data_keys = callback_data_keys or ['id']
         self._callback = callback
 
@@ -76,7 +77,8 @@ class CallbackPaginator(BasePaginator):
                 InlineKeyboardButton(
                     self._title_pattern.format(**value),
                     callback_data=self._callback.set_data(
-                        **{key: value for key, value in value.items() if key in self._callback_data_keys}
+                        **{key: value for key, value in value.items() if key in self._callback_data_keys},
+                        **self._data_params,
                     )
                 )
             )

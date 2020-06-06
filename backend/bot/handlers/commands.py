@@ -45,7 +45,7 @@ class SettingsCommand(BaseCommandHandler):
     COMMAND = 'settings'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
-        update.effective_message.reply_text(_('settings'))
+        update.effective_message.reply_text(_('settings'), reply_markup=keyboards.settings_markup(user))
 
 
 class ProfileCommand(BaseCommandHandler):
@@ -66,3 +66,10 @@ class LanguageCommand(BaseCommandHandler):
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('choose_lang'), reply_markup=keyboards.language(user))
+
+
+class FilterCommand(BaseCommandHandler):
+    COMMAND = 'filter'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        update.effective_message.reply_text(_('data_filter'), reply_markup=keyboards.filter_markup(user))

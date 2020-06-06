@@ -50,6 +50,23 @@ class LocationMessages(BaseMessageHandler):
         print(update.effective_message.location.__dict__)
 
 
+class ContactMessage(BaseMessageHandler):
+    FILTERS = Filters.contact
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        if update.effective_message.reply_to_message.text == _('settings'):
+            if update.effective_message.contact.user_id != update.effective_message.from_user.id:
+                update.effective_message.reply_text(_('dont_send_someone_phone_number'))
+                return False
+            user.phone = update.effective_message.contact.phone_number
+            user.save()
+            update.effective_message.reply_text(
+                _('saved_user_phone').format(phone=user.phone),
+                reply_markup=keyboards.main_menu(user)
+            )
+        update.effective_message.delete()
+
+
 def unknown(bot, update):
     text = 'Незрозуміла команда. Спробуйте ще раз. ️😊'
     update.message.reply_text(text)

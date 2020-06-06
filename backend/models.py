@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import activate, gettext
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +22,8 @@ class TelegramUser(models.Model):
     state = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
     lang = models.CharField(max_length=10, default='uk')
+    phone = models.CharField(max_length=30, blank=True)
+    options = JSONField(default=dict)
 
     def __str__(self):
         return f'{self.full_name} - {self.id}'
@@ -43,6 +46,14 @@ class TelegramUser(models.Model):
 
     def activate(self):
         activate(self.lang)
+
+    @property
+    def filters(self):
+        return self.options.setdefault('filters', {'open': False, 'nearby': False})
+
+    @property
+    def orders(self):
+        return self.options.setdefault('orders', {})
 
 
 class Category(MPTTModel, models.Model):
