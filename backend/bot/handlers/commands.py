@@ -69,7 +69,7 @@ class LanguageCommand(BaseCommandHandler):
 
 
 class FilterCommand(BaseCommandHandler):
-    COMMAND = 'filter'
+    COMMAND = 'filters'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         update.effective_message.reply_text(_('data_filter'), reply_markup=keyboards.filter_markup(user))

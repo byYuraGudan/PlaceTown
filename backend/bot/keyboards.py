@@ -120,8 +120,18 @@ def grade_buttons(company: Company):
 
 def filter_markup(user: TelegramUser):
     keyboard = [
-        InlBtn(_('by_rating'), callback_data=FilterCallback.set_data(order='rating')),
-        InlBtn(_('by_alphabet'), callback_data=FilterCallback.set_data(order='name'))
+        InlBtn(
+            _('by_rating') + (' ✅' if user.orders.get('by') == 'mark' else ''),
+            callback_data=FilterCallback.set_data(order='mark')
+        ),
+        InlBtn(
+            _('by_alphabet') + (' ✅' if user.orders.get('by') == 'name' else ''),
+            callback_data=FilterCallback.set_data(order='name')
+        ),
+        InlBtn(
+            _('sorting') + (' 🔼' if user.orders.get('sorting', True) else ' 🔽'),
+            callback_data=FilterCallback.set_data(order='sorting')
+        )
     ]
     return InlineKeyboardMarkup(build_menu(keyboard, cols=1))
 

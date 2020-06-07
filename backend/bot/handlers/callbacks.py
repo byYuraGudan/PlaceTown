@@ -76,10 +76,13 @@ class FilterCallback(BaseCallbackQueryHandler):
             CompaniesCallback.callback(self, bot, update, user, data)
         if data.get('order'):
             order = data.pop('order')
-            if order == 'name':
-                pass
-            elif order == 'rating':
-                pass
+            orders = user.orders
+            if order == 'sorting':
+                orders['sorting'] = not user.orders.get('sorting', True)
+            else:
+                orders['by'] = order
+            user.options['orders'] = orders
+            update.effective_message.edit_reply_markup(reply_markup=keyboards.filter_markup(user))
         user.save()
 
 
@@ -265,7 +268,7 @@ class CompaniesCallback(BaseCallbackQueryHandler):
         user.activate()
         query = update.callback_query
         from backend.bot import pagination
-        companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name').order_by('-id')
+        companies = Company.objects.filter(category_id=data.get('cid')).values('id', 'name')
         if user.filters['open']:
             time_now = timezone.now()
             open_companies = TimeWork.objects.filter(
@@ -275,6 +278,20 @@ class CompaniesCallback(BaseCallbackQueryHandler):
                 end_time__gte=time_now,
             ).values('performer_id').distinct()
             companies = companies.filter(id__in=open_companies)
+
+        if user.location:
+            # TODO get location
+            pass
+
+        order = user.orders.get('by')
+        if order:
+            if order == 'mark':
+                companies = companies.prefetch_related('grades') \
+                    .annotate(mark=models.Avg('grades__mark'))
+            if user.orders.get('sorting'):
+                order = '-' + order
+            companies = companies.order_by(order)
+
         option_keyboards = [
             [
                 InlBtn(

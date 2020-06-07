@@ -53,7 +53,11 @@ class TelegramUser(models.Model):
 
     @property
     def orders(self):
-        return self.options.setdefault('orders', {})
+        return self.options.setdefault('orders', {'by': 'name', 'sorting': True})
+
+    @property
+    def location(self):
+        return self.options.get('location', {})
 
 
 class Category(MPTTModel, models.Model):
