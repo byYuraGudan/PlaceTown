@@ -9,7 +9,7 @@ from telegram import Update, Bot, InlineKeyboardButton as InlBtn, InlineKeyboard
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile, Grade
+from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile, Grade, Order
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +71,13 @@ class FilterCallback(BaseCallbackQueryHandler):
                 user.options['filters']['open'] = not user.filters['open']
                 query.answer(_('open_company') + (' ✅' if user.options['filters']['open'] else ''))
             elif status == 'nearby':
+                if not user.location.get('last_update'):
+                    query.answer(_('must_update_location'))
+                    return False
+                location_update = timezone.datetime.strptime(user.location.get('last_update'), '%d-%m-%y %H:%M')
+                if divmod((timezone.now().replace(tzinfo=None) - location_update).total_seconds(), 60)[0] > 10:
+                    query.answer(_('must_update_location'))
+                    return False
                 user.options['filters']['nearby'] = not user.filters['nearby']
                 query.answer(_('nearby_company') + (' ✅' if user.options['filters']['nearby'] else ''))
             CompaniesCallback.callback(self, bot, update, user, data)
@@ -129,15 +136,80 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
         query.answer(_('location_of_company').format(name=company.name))
 
 
+class OrderPerformerCallback(BaseCallbackQueryHandler):
+    PATTERN = 'per-order'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        print(data)
+
+
+class OrderUserCallback(BaseCallbackQueryHandler):
+    PATTERN = 'us-order'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        print(data)
+
+
+class CreateOrderCallback(BaseCallbackQueryHandler):
+    PATTERN = 'cr-order'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        markup = update.effective_message.reply_markup
+        markup.inline_keyboard = markup.inline_keyboard[1:]
+        update.effective_message.edit_reply_markup(reply_markup=markup)
+        service = Service.objects.filter(id=data.pop('id')).first()
+        order = Order.objects.create(customer=user, service=service)
+        performer_user = service.performer.profile.user
+
+        user_buttons = [
+            InlBtn(_('reject_order'), callback_data=OrderUserCallback.set_data(id=order.id, status='reject')),
+        ]
+        update.effective_message.reply_text(
+            _('created_order_user_info').format(
+                status=order.STATUS_DICT.get(order.status),
+                company=order.service.performer.name,
+                service=order.service.name,
+                created=order.created.strftime('%d-%m-%y %H:%M'),
+                contact=service.performer.contact,
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(user_buttons))
+        )
+
+        performer_buttons = [
+            InlBtn(_('accept_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=1)),
+            InlBtn(_('reject_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=2)),
+            InlBtn(_('done_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=3)),
+        ]
+        bot.send_message(
+            performer_user.id,
+            _('create_order_performer_info').format(
+                status=order.STATUS_DICT.get(order.status),
+                service=order.service.name,
+                created=order.created.strftime('%d-%m-%y %H:%M'),
+                user_name=order.customer.full_name,
+                contact=order.customer.phone,
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(performer_buttons))
+        )
+
+
 class ServiceCompanyCallback(BaseCallbackQueryHandler):
     PATTERN = 'ssid'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
-        service = Service.objects.filter(id=data.get('id')).first()
+        service = Service.objects.filter(id=data.pop('id')).first()
         if not service:
             query.answer(_('not_info_about_services_of_company'))
             return False
+        buttons = [
+            InlBtn(_('create_order'), callback_data=CreateOrderCallback.set_data(id=service.id)),
+            InlBtn(_('back'), callback_data=ServicesPaginatorCallback.set_data(page=data.pop('s_pg'), **data))
+        ]
+        query.edit_message_text(
+            _('about_service').format(name=service.name, description=service.description),
+            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(buttons, cols=1))
+        )
 
 
 class ServicesPaginatorCallback(BaseCallbackQueryHandler):
@@ -146,22 +218,22 @@ class ServicesPaginatorCallback(BaseCallbackQueryHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         user.activate()
         query = update.callback_query
-        services = Service.objects.filter(performer_id=data.get('cid')).values('id', 'name').order_by('name')
+        services = Service.objects.filter(performer_id=data['cid']).values('id', 'name').order_by('name')
         if not services:
             query.answer(_('not_info_about_services_of_company'))
-            CompanyDetailCallback.callback(self, bot, update, user, {'id': data.get('id')})
+            CompanyDetailCallback.callback(self, bot, update, user, {'id': data.get('cid')})
             return False
 
         from backend.bot import pagination
         paginator = pagination.CallbackPaginator(
-            services, ServiceCompanyCallback, self, page=data.get('page', 1), page_size=2,
-            page_params={'cid': data.get('cid')}
+            services, ServiceCompanyCallback, self, page=data.get('page', 1), page_size=1,
+            page_params={'cid': data['cid']}, data_params={'cid': data['cid'], 's_pg': data.get('page', 1)}
         )
         markup = paginator.inline_markup
         back_btn = [
             InlBtn(
                 _('back'),
-                callback_data=CompanyDetailCallback.set_data(id=data.get('cid'), page=data.get('page', 1))),
+                callback_data=CompanyDetailCallback.set_data(id=data.get('cid'), page=data.get('ct_pg', 1))),
         ]
         markup.inline_keyboard.append(back_btn)
         query.edit_message_text(_('choose_services_of_company'), reply_markup=markup)
@@ -217,7 +289,7 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
             keyboard.append(InlBtn(_('grade'), callback_data=grade_callback))
 
         if company.services.exists():
-            callback = ServicesPaginatorCallback.set_data(cid=company.id)
+            callback = ServicesPaginatorCallback.set_data(cid=company.id, ct_pg=data.get('ct_pg', 1))
             keyboard.append(InlBtn(_('services'), callback_data=callback))
 
         from backend.bot.keyboards import build_menu

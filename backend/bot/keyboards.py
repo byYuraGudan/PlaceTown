@@ -23,8 +23,11 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
 
 
 def main_menu(user):
-    keyboards = [_('categories')]
-    return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
+    keyboards = [
+        KeyboardButton(_('categories')),
+        KeyboardButton(_('get_location'), request_location=True),
+    ]
+    return ReplyKeyboardMarkup(build_menu(keyboards, cols=1), resize_keyboard=True)
 
 
 def language(user: TelegramUser):
@@ -129,7 +132,7 @@ def filter_markup(user: TelegramUser):
             callback_data=FilterCallback.set_data(order='name')
         ),
         InlBtn(
-            _('sorting') + (' 🔼' if user.orders.get('sorting', True) else ' 🔽'),
+            _('sorting') + (' 🔽' if user.orders.get('sorting', True) else ' 🔼'),
             callback_data=FilterCallback.set_data(order='sorting')
         )
     ]

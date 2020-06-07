@@ -149,12 +149,13 @@ class Service(models.Model):
 
 class Order(models.Model):
     STATUS = [
-        (0, _('accepted')),
-        (1, _('waiting')),
+        (0, _('waiting')),
+        (1, _('accepted')),
         (2, _('rejected')),
         (3, _('done')),
     ]
-    status = models.SmallIntegerField(choices=STATUS)
+    STATUS_DICT = dict(STATUS)
+    status = models.SmallIntegerField(choices=STATUS, default=0)
     customer = models.ForeignKey(TelegramUser, on_delete=models.PROTECT)
     service = models.ForeignKey(Service, on_delete=models.PROTECT)
 

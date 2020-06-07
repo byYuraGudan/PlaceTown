@@ -1,11 +1,16 @@
+import logging
+
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from telegram import Bot, Update
-from telegram.ext import MessageHandler, Filters
+from telegram.ext import MessageHandler, Filters, run_async
 
 from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
 from backend.models import TelegramUser, Category
+
+logger = logging.getLogger(__name__)
 
 
 class BaseMessageHandler(MessageHandler):
@@ -46,8 +51,17 @@ class CategoriesMessages(BaseMessageHandler):
 class LocationMessages(BaseMessageHandler):
     FILTERS = Filters.location
 
+    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
-        print(update.effective_message.location.__dict__)
+        location = update.effective_message.location
+        user.options['location'] = {
+            'longitude': location.longitude,
+            'latitude': location.latitude,
+            'last_update': timezone.now().strftime('%d-%m-%y %H:%M'),
+        }
+        user.save()
+        update.effective_message.reply_text(_('update_user_location'), reply_markup=keyboards.main_menu(user))
+        update.effective_message.delete()
 
 
 class ContactMessage(BaseMessageHandler):
@@ -68,8 +82,8 @@ class ContactMessage(BaseMessageHandler):
 
 
 def unknown(bot, update):
-    text = 'Незрозуміла команда. Спробуйте ще раз. ️😊'
-    update.message.reply_text(text)
+    user = TelegramUser.get_user(update.effective_message.from_user)
+    update.message.reply_text(_('unknown_message'))
     return 'unknown'
 
 
