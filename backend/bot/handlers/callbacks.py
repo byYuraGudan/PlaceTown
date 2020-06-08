@@ -136,24 +136,97 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
         query.answer(_('location_of_company').format(name=company.name))
 
 
-class OrderPerformerCallback(BaseCallbackQueryHandler):
-    PATTERN = 'per-order'
-
-    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
-        print(data)
-
-
-class OrderUserCallback(BaseCallbackQueryHandler):
+class OrderStatusCallback(BaseCallbackQueryHandler):
     PATTERN = 'us-order'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
-        print(data)
+        query = update.callback_query
+        order = Order.objects.filter(id=data['id']).first()
+        if not order:
+            query.answer(_('no_info_available'))
+            return True
+        order.status = int(data['status'])
+        order.save()
+        self.update_order_user(bot, order)
+        self.update_performer_order(bot, order)
 
+    @classmethod
+    def get_user_order_info(cls, order: Order, user: TelegramUser):
+        user.activate()
+        return _('created_order_user_info').format(
+            status=order.STATUS_DICT.get(order.status),
+            company=order.service.performer.name,
+            service=order.service.name,
+            created=order.created.strftime('%d-%m-%y %H:%M'),
+            contact=order.service.performer.contact,
+        )
+
+    @classmethod
+    def get_user_order_markup(cls, order, user, back_btn=None):
+        if order.status == 3:
+            return None
+        user.activate()
+        keyboard = []
+        if order.status != 2:
+            keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2)))
+        return InlineKeyboardMarkup(keyboards.build_menu(keyboard, footer_buttons=back_btn))
+
+    @classmethod
+    def get_order_performer_info(cls, order: Order, user: TelegramUser):
+        user.activate()
+        return _('create_order_performer_info').format(
+            status=order.STATUS_DICT.get(order.status),
+            service=order.service.name,
+            created=order.created.strftime('%d-%m-%y %H:%M'),
+            company=order.service.performer.name,
+            user_name=order.customer.full_name,
+            contact=order.customer.phone,
+        )
+
+    @classmethod
+    def get_order_performer_markup(cls, order: Order, user: TelegramUser, back_btn=None):
+        if order.status in (2, 3):
+            return None
+        user.activate()
+        keyboard = []
+        if order.status != 1:
+            keyboard.append(InlBtn(_('accept_order'), callback_data=cls.set_data(id=order.id, status=1)))
+        if order.status != 3:
+            keyboard.append(InlBtn(_('done_order'), callback_data=cls.set_data(id=order.id, status=3)))
+        keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2)))
+        return InlineKeyboardMarkup(keyboards.build_menu(keyboard, footer_buttons=back_btn))
+
+    @classmethod
+    def update_order_user(cls, bot, order):
+        customer, messages = order.get_customer_and_messages
+        for message_id in messages:
+            bot.edit_message_text(
+                text=cls.get_user_order_info(order, customer),
+                chat_id=customer.id,
+                message_id=message_id,
+                reply_markup=cls.get_user_order_markup(order, customer),
+            )
+
+    @classmethod
+    def update_performer_order(cls, bot, order):
+        performer, messages = order.get_performer_and_messages
+        for message_id in messages:
+            bot.edit_message_text(
+                text=cls.get_order_performer_info(order, performer),
+                chat_id=performer.id,
+                message_id=message_id,
+                reply_markup=cls.get_order_performer_markup(order, performer),
+            )
 
 class CreateOrderCallback(BaseCallbackQueryHandler):
     PATTERN = 'cr-order'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        if not user.phone:
+            query.answer(_('must_set_user_phone'))
+            update.effective_message.reply_text(_('must_set_user_phone'), reply_markup=keyboards.settings_markup(user))
+            return False
         markup = update.effective_message.reply_markup
         markup.inline_keyboard = markup.inline_keyboard[1:]
         update.effective_message.edit_reply_markup(reply_markup=markup)
@@ -161,36 +234,19 @@ class CreateOrderCallback(BaseCallbackQueryHandler):
         order = Order.objects.create(customer=user, service=service)
         performer_user = service.performer.profile.user
 
-        user_buttons = [
-            InlBtn(_('reject_order'), callback_data=OrderUserCallback.set_data(id=order.id, status='reject')),
-        ]
-        update.effective_message.reply_text(
-            _('created_order_user_info').format(
-                status=order.STATUS_DICT.get(order.status),
-                company=order.service.performer.name,
-                service=order.service.name,
-                created=order.created.strftime('%d-%m-%y %H:%M'),
-                contact=service.performer.contact,
-            ),
-            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(user_buttons))
+        user_message = update.effective_message.reply_text(
+            OrderStatusCallback.get_user_order_info(order, user),
+            reply_markup=OrderStatusCallback.get_user_order_markup(order, user)
         )
 
-        performer_buttons = [
-            InlBtn(_('accept_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=1)),
-            InlBtn(_('reject_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=2)),
-            InlBtn(_('done_order'), callback_data=OrderPerformerCallback.set_data(id=order.id, status=3)),
-        ]
-        bot.send_message(
+        performer_message = bot.send_message(
             performer_user.id,
-            _('create_order_performer_info').format(
-                status=order.STATUS_DICT.get(order.status),
-                service=order.service.name,
-                created=order.created.strftime('%d-%m-%y %H:%M'),
-                user_name=order.customer.full_name,
-                contact=order.customer.phone,
-            ),
-            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(performer_buttons))
+            OrderStatusCallback.get_order_performer_info(order, performer_user),
+            reply_markup=OrderStatusCallback.get_order_performer_markup(order, performer_user)
         )
+        order.options.setdefault('user_messages', []).append(user_message.message_id)
+        order.options.setdefault('performer_messages', []).append(performer_message.message_id)
+        order.save()
 
 
 class ServiceCompanyCallback(BaseCallbackQueryHandler):
@@ -207,7 +263,7 @@ class ServiceCompanyCallback(BaseCallbackQueryHandler):
             InlBtn(_('back'), callback_data=ServicesPaginatorCallback.set_data(page=data.pop('s_pg'), **data))
         ]
         query.edit_message_text(
-            _('about_service').format(name=service.name, description=service.description),
+            _('about_service').format(name=service.name, description=service.description or _('no_info_available')),
             reply_markup=InlineKeyboardMarkup(keyboards.build_menu(buttons, cols=1))
         )
 
@@ -300,7 +356,8 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
         )
         markup = InlineKeyboardMarkup(build_menu(keyboard, footer_buttons=[back_btn], cols=2))
 
-        text = _('about_company').format(name=company.name, description=company.description or _('no_info_available'))
+        text = _('about_company').format(name=company.name,
+                                         description=company.description or _('no_info_available'))
 
         if company.grades.filter(mark__isnull=False).exists():
             grade_mark = company.grades.filter(mark__isnull=False) \

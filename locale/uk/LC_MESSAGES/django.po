@@ -87,11 +87,11 @@ msgstr "🔴 Відхилити замовлення"
 
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
-msgstr "Статус: {status}\n"
-"Створений: {created} \n"
+msgstr "📌: {status}\n"
+"🕑 Створений: {created} \n"
 "Заклад: {company}\n"
 "Послуга: {service}\n"
-"Контактні дані закладу: {contact}"
+"📞: {contact}"
 
 
 #: backend/bot/handlers/callbacks.py:175
@@ -104,11 +104,12 @@ msgstr " ✅ Виконано"
 
 #: backend/bot/handlers/callbacks.py:181
 msgid "create_order_performer_info"
-msgstr "Статус: {status}\n"
-"Створений: {created} \n"
-"Користувач: {user_name}\n"
-"Послуга: {service}\n"
-"Контактні дані користувача: {contact}"
+msgstr "📌: {status}\n"
+"🕑 Створений: {created} \n\n"
+"👤: {user_name}\n"
+"📞: {contact}\n\n"
+"Заклад: {company}\n"
+"Послуга: {service}"
 
 #: backend/bot/handlers/callbacks.py:198 backend/bot/handlers/callbacks.py:218
 msgid "not_info_about_services_of_company"

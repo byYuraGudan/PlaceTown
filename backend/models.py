@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -5,7 +6,6 @@ from django.utils.translation import activate, gettext
 from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
-from PlaceTown import settings
 
 NAME_LENGTH = 200
 
@@ -33,8 +33,9 @@ class TelegramUser(models.Model):
         defaults = {
             'id': user.id,
             'username': user.username or '',
-            'full_name': '{} {}'.format(user.first_name, user.last_name),
-            'lang': user.language_code or settings.LANGUAGE_CODE,
+            'full_name': '{} {}'.format(user.first_name or '', user.last_name or ''),
+            'lang': user.language_code if user.language_code in dict(settings.LANGUAGES).keys()
+            else settings.LANGUAGE_CODE,
         }
         user, created = TelegramUser.objects.get_or_create(id=user.id, defaults=defaults)
         activate(user.lang)
@@ -159,10 +160,20 @@ class Order(models.Model):
     customer = models.ForeignKey(TelegramUser, on_delete=models.PROTECT)
     service = models.ForeignKey(Service, on_delete=models.PROTECT)
 
+    options = JSONField(default=dict, null=True)
+
     price = models.DecimalField(max_digits=10, decimal_places=3, default=0, blank=True)
 
     created = models.DateTimeField(auto_now_add=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True, blank=True)
+
+    @property
+    def get_customer_and_messages(self):
+        return self.customer, self.options.setdefault('user_messages', [])
+
+    @property
+    def get_performer_and_messages(self):
+        return self.service.performer.profile.user, self.options.setdefault('performer_messages', [])
 
 
 class Grade(models.Model):
@@ -185,4 +196,3 @@ class Comment(models.Model):
 
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-

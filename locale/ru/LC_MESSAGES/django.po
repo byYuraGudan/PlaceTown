@@ -85,11 +85,11 @@ msgstr "🔴 Отклонить заказ"
 
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
-msgstr "Статус: {status} \n"
-"Созданный: {created} \n"
+msgstr "📌: {status} \n"
+"🕑 Созданный: {created} \n"
 "Заведение: {company} \n"
 "Услуга: {service} \n"
-"Контактные данные заведения: {contact}"
+"📞: {contact}"
 
 #: backend/bot/handlers/callbacks.py:175
 msgid "accept_order"
@@ -101,11 +101,12 @@ msgstr "✅ Выполнено"
 
 #: backend/bot/handlers/callbacks.py:181
 msgid "create_order_performer_info"
-msgstr "Статус: {status} \n"
-"Созданный: {created} \n"
-"Пользователь: {user_name} \n"
-"Услуга: {service} \n"
-"Контактные данные пользователя: {contact}"
+msgstr "📌: {status} \n"
+"🕑 Созданный: {created} \n\n"
+"👤: {user_name} \n"
+"📞: {contact} \n\n"
+"Заведение: {company} \n"
+"Услуга: {service}"
 
 #: backend/bot/handlers/callbacks.py:198 backend/bot/handlers/callbacks.py:218
 msgid "not_info_about_services_of_company"

@@ -82,11 +82,11 @@ msgstr "🔴 Reject the order"
 
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
-msgstr "Status: {status} \n"
-"Created: {created} \n"
+msgstr "📌: {status} \n"
+"🕑 Created: {created} \n"
 "Company: {company} \n"
 "Service: {service} \n"
-"Contact details of the institution: {contact}"
+"📞: {contact}"
 
 #: backend/bot/handlers/callbacks.py:175
 msgid "accept_order"
@@ -98,11 +98,13 @@ msgstr "✅ Done"
 
 #: backend/bot/handlers/callbacks.py:181
 msgid "create_order_performer_info"
-msgstr "Status: {status} \n"
-"Created: {created} \n"
-"User: {user_name} \n"
-"Service: {service} \n"
-"User contact details: {contact}"
+msgstr "📌: {status} \n"
+"🕑 Created: {created} \n\n"
+"👤: {user_name} \n"
+"📞: {contact}\n\n"
+"Company: {company} \n"
+"Service: {service}"
+
 
 #: backend/bot/handlers/callbacks.py:198 backend/bot/handlers/callbacks.py:218
 msgid "not_info_about_services_of_company"
@@ -244,7 +246,7 @@ msgstr "📚 Categories"
 
 #: backend/bot/keyboards.py:28 backend/bot/keyboards.py:144
 msgid "get_location"
-msgstr "📍📍 My location"
+msgstr "📍 My location"
 
 #: backend/bot/keyboards.py:127
 msgid "by_rating"
