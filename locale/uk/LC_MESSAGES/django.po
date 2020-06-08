@@ -88,11 +88,10 @@ msgstr "🔴 Відхилити замовлення"
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
 msgstr "📌: {status}\n"
-"🕑 Створений: {created} \n"
+"🕑 Створений: {created} \n\n"
+"📞: {contact} \n\n"
 "Заклад: {company}\n"
-"Послуга: {service}\n"
-"📞: {contact}"
-
+"Послуга: {service}"
 
 #: backend/bot/handlers/callbacks.py:175
 msgid "accept_order"

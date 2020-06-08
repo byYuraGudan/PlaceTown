@@ -86,10 +86,10 @@ msgstr "🔴 Отклонить заказ"
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
 msgstr "📌: {status} \n"
-"🕑 Созданный: {created} \n"
+"🕑 Созданный: {created} \n\n"
+"📞: {contact} \n\n"
 "Заведение: {company} \n"
-"Услуга: {service} \n"
-"📞: {contact}"
+"Услуга: {service}"
 
 #: backend/bot/handlers/callbacks.py:175
 msgid "accept_order"

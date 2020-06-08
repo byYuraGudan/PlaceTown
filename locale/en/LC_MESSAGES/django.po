@@ -83,10 +83,10 @@ msgstr "🔴 Reject the order"
 #: backend/bot/handlers/callbacks.py:165
 msgid "created_order_user_info"
 msgstr "📌: {status} \n"
-"🕑 Created: {created} \n"
+"🕑 Created: {created} \n\n"
+"📞: {contact}\n\n"
 "Company: {company} \n"
-"Service: {service} \n"
-"📞: {contact}"
+"Service: {service}"
 
 #: backend/bot/handlers/callbacks.py:175
 msgid "accept_order"

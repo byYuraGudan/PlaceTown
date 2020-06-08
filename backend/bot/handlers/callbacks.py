@@ -162,7 +162,7 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
         )
 
     @classmethod
-    def get_user_order_markup(cls, order, user, back_btn=None):
+    def get_user_order_markup(cls, order: Order, user: TelegramUser, back_btn=None):
         if order.status == 3:
             return None
         user.activate()
@@ -197,26 +197,33 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
         return InlineKeyboardMarkup(keyboards.build_menu(keyboard, footer_buttons=back_btn))
 
     @classmethod
-    def update_order_user(cls, bot, order):
+    def update_order_user(cls, bot: Bot, order: Order):
         customer, messages = order.get_customer_and_messages
         for message_id in messages:
-            bot.edit_message_text(
-                text=cls.get_user_order_info(order, customer),
-                chat_id=customer.id,
-                message_id=message_id,
-                reply_markup=cls.get_user_order_markup(order, customer),
-            )
+            try:
+                bot.delete_message(customer.id, message_id)
+            except:
+                log.error(f'Message {message_id} for chat {customer.id} not found')
+        text = cls.get_user_order_info(order, customer)
+        markup = cls.get_user_order_markup(order, customer)
+        message = bot.send_message(chat_id=customer.id, text=text, reply_markup=markup)
+        order.options['user_messages'] = [message.message_id]
+        order.save()
 
     @classmethod
-    def update_performer_order(cls, bot, order):
+    def update_performer_order(cls, bot: Bot, order: Order):
         performer, messages = order.get_performer_and_messages
         for message_id in messages:
-            bot.edit_message_text(
-                text=cls.get_order_performer_info(order, performer),
-                chat_id=performer.id,
-                message_id=message_id,
-                reply_markup=cls.get_order_performer_markup(order, performer),
-            )
+            try:
+                bot.delete_message(performer.id, message_id)
+            except:
+                log.error(f'Message {message_id} for chat {performer.id} not found')
+        text = cls.get_order_performer_info(order, performer)
+        markup = cls.get_order_performer_markup(order, performer)
+        message = bot.send_message(chat_id=performer.id, text=text, reply_markup=markup)
+        order.options['performer_messages'] = [message.message_id]
+        order.save()
+
 
 class CreateOrderCallback(BaseCallbackQueryHandler):
     PATTERN = 'cr-order'
@@ -282,7 +289,7 @@ class ServicesPaginatorCallback(BaseCallbackQueryHandler):
 
         from backend.bot import pagination
         paginator = pagination.CallbackPaginator(
-            services, ServiceCompanyCallback, self, page=data.get('page', 1), page_size=1,
+            services, ServiceCompanyCallback, self, page=data.get('page', 1),
             page_params={'cid': data['cid']}, data_params={'cid': data['cid'], 's_pg': data.get('page', 1)}
         )
         markup = paginator.inline_markup
