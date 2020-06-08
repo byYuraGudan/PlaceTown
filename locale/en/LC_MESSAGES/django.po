@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-07 22:17+0300\n"
+"POT-Creation-Date: 2020-06-08 23:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr "Selected {} language"
 msgid "select_you_interested"
 msgstr "Choose what interests you"
 
-#: backend/bot/handlers/callbacks.py:72 backend/bot/handlers/callbacks.py:365
+#: backend/bot/handlers/callbacks.py:72 backend/bot/handlers/callbacks.py:448
 msgid "open_company"
 msgstr "⏱ Open сompanies"
 
@@ -46,7 +46,7 @@ msgstr "⏱ Open сompanies"
 msgid "must_update_location"
 msgstr "📍📍Update your location!"
 
-#: backend/bot/handlers/callbacks.py:82 backend/bot/handlers/callbacks.py:369
+#: backend/bot/handlers/callbacks.py:82 backend/bot/handlers/callbacks.py:452
 msgid "nearby_company"
 msgstr "🧭 Companies nearby"
 
@@ -76,119 +76,135 @@ msgstr "Unfortunately, the company did not specify the location."
 msgid "location_of_company"
 msgstr "Location of \"{name}\""
 
-#: backend/bot/handlers/callbacks.py:162 backend/bot/handlers/callbacks.py:176
+#: backend/bot/handlers/callbacks.py:146 backend/bot/handlers/callbacks.py:283
+#: backend/bot/handlers/callbacks.py:381 backend/bot/handlers/callbacks.py:408
+msgid "no_info_available"
+msgstr "No information available"
+
+#: backend/bot/handlers/callbacks.py:156
+msgid "created_order_user_info"
+msgstr ""
+"📌: {status} \n"
+"🕑 Created: {created} \n"
+"\n"
+"📞: {contact}\n"
+"\n"
+"Company: {company} \n"
+"Service: {service}"
+
+#: backend/bot/handlers/callbacks.py:171 backend/bot/handlers/callbacks.py:196
 msgid "reject_order"
 msgstr "🔴 Reject the order"
 
-#: backend/bot/handlers/callbacks.py:165
-msgid "created_order_user_info"
-msgstr "📌: {status} \n"
-"🕑 Created: {created} \n\n"
-"📞: {contact}\n\n"
+#: backend/bot/handlers/callbacks.py:177
+msgid "create_order_performer_info"
+msgstr ""
+"📌: {status} \n"
+"🕑 Created: {created} \n"
+"\n"
+"👤: {user_name} \n"
+"📞: {contact}\n"
+"\n"
 "Company: {company} \n"
 "Service: {service}"
 
-#: backend/bot/handlers/callbacks.py:175
+#: backend/bot/handlers/callbacks.py:193
 msgid "accept_order"
 msgstr "🟢 Accept the order"
 
-#: backend/bot/handlers/callbacks.py:177
+#: backend/bot/handlers/callbacks.py:195
 msgid "done_order"
 msgstr "✅ Done"
 
-#: backend/bot/handlers/callbacks.py:181
-msgid "create_order_performer_info"
-msgstr "📌: {status} \n"
-"🕑 Created: {created} \n\n"
-"👤: {user_name} \n"
-"📞: {contact}\n\n"
-"Company: {company} \n"
-"Service: {service}"
+#: backend/bot/handlers/callbacks.py:234 backend/bot/handlers/callbacks.py:235
+msgid "must_set_user_phone"
+msgstr "To process the services, you need to update your contact information so that we can contact you."
 
-
-#: backend/bot/handlers/callbacks.py:198 backend/bot/handlers/callbacks.py:218
+#: backend/bot/handlers/callbacks.py:239 backend/bot/handlers/callbacks.py:273
+#: backend/bot/handlers/callbacks.py:300
 msgid "not_info_about_services_of_company"
 msgstr "There is no information about services of this company."
 
-#: backend/bot/handlers/callbacks.py:201
+#: backend/bot/handlers/callbacks.py:243 backend/bot/handlers/callbacks.py:276
+msgid "service_was_early_booking"
+msgstr "Sorry, services have already been booked."
+
+#: backend/bot/handlers/callbacks.py:279
 msgid "create_order"
 msgstr "📝 Create an order"
 
-#: backend/bot/handlers/callbacks.py:202 backend/bot/handlers/callbacks.py:230
-#: backend/bot/handlers/callbacks.py:292 backend/bot/handlers/callbacks.py:375
+#: backend/bot/handlers/callbacks.py:280 backend/bot/handlers/callbacks.py:312
+#: backend/bot/handlers/callbacks.py:374 backend/bot/handlers/callbacks.py:458
 msgid "back"
 msgstr "⬅️ Back"
 
-#: backend/bot/handlers/callbacks.py:205
+#: backend/bot/handlers/callbacks.py:283
 msgid "about_service"
-msgstr "Назва: {name}\n"
+msgstr ""
+"Назва: {name}\n"
 "Опис: {description}"
 
-#: backend/bot/handlers/callbacks.py:234
+#: backend/bot/handlers/callbacks.py:316
 msgid "choose_services_of_company"
 msgstr "Choose a service:"
 
-#: backend/bot/handlers/callbacks.py:245 backend/bot/handlers/callbacks.py:270
+#: backend/bot/handlers/callbacks.py:327 backend/bot/handlers/callbacks.py:352
 msgid "not_info_about_company"
 msgstr "There is no information about this company. Choose another company."
 
-#: backend/bot/handlers/callbacks.py:250
+#: backend/bot/handlers/callbacks.py:332
 msgid "your_mark_company_is"
 msgstr "Your rating is {mark} ⭐️"
 
-#: backend/bot/handlers/callbacks.py:255
+#: backend/bot/handlers/callbacks.py:337
 msgid "you_are_grade_the_company"
 msgstr "You have already rated this company."
 
-#: backend/bot/handlers/callbacks.py:258
+#: backend/bot/handlers/callbacks.py:340
 msgid "grade_the_company"
 msgstr "Rate the establishment from 1 to 5 ⭐️"
 
-#: backend/bot/handlers/callbacks.py:276 backend/bot/keyboards.py:50
+#: backend/bot/handlers/callbacks.py:358 backend/bot/keyboards.py:50
 msgid "site_url"
 msgstr "🌐 Links to the site"
 
-#: backend/bot/handlers/callbacks.py:280
+#: backend/bot/handlers/callbacks.py:362
 msgid "location"
 msgstr "📍 Location"
 
-#: backend/bot/handlers/callbacks.py:284
+#: backend/bot/handlers/callbacks.py:366
 msgid "grade"
 msgstr "⭐ Rate"
 
-#: backend/bot/handlers/callbacks.py:288
+#: backend/bot/handlers/callbacks.py:370
 msgid "services"
 msgstr "📝 Services"
 
-#: backend/bot/handlers/callbacks.py:298
+#: backend/bot/handlers/callbacks.py:380
 msgid "about_company"
 msgstr ""
 "<b>Name:</b> {name}\n"
 "<b>Description:</b> {description}"
 
-#: backend/bot/handlers/callbacks.py:298 backend/bot/handlers/callbacks.py:325
-msgid "no_info_available"
-msgstr "No information available"
-
-#: backend/bot/handlers/callbacks.py:311
+#: backend/bot/handlers/callbacks.py:394
 msgid "work_schedule"
 msgstr "<b>📅 Work schedule: </b>"
 
-#: backend/bot/handlers/callbacks.py:382
+#: backend/bot/handlers/callbacks.py:465
 msgid "not_choose_performer_for_current_category"
 msgstr ""
 "There is no information about institutions in this category. Try a different "
 "category."
 
-#: backend/bot/handlers/callbacks.py:395
+#: backend/bot/handlers/callbacks.py:478
 msgid "choose_company"
 msgstr "Choose a company:"
 
-#: backend/bot/handlers/callbacks.py:406 backend/bot/handlers/messages.py:41
+#: backend/bot/handlers/callbacks.py:489 backend/bot/handlers/messages.py:41
 msgid "not_choose_categories"
 msgstr "Sorry, no categories."
 
-#: backend/bot/handlers/callbacks.py:413 backend/bot/handlers/messages.py:48
+#: backend/bot/handlers/callbacks.py:496 backend/bot/handlers/messages.py:48
 msgid "choose_category"
 msgstr "Choose a category:"
 
@@ -200,7 +216,7 @@ msgstr "Help"
 msgid "start"
 msgstr "Hello {}"
 
-#: backend/bot/handlers/commands.py:48 backend/bot/handlers/messages.py:71
+#: backend/bot/handlers/commands.py:48
 msgid "settings"
 msgstr "Settings"
 
@@ -222,21 +238,21 @@ msgstr "Choose language:"
 msgid "data_filter"
 msgstr "Display information about companies, according to selected filter."
 
-#: backend/bot/handlers/messages.py:63
+#: backend/bot/handlers/messages.py:62
 msgid "update_user_location"
 msgstr "Your location has been updated."
 
-#: backend/bot/handlers/messages.py:73
+#: backend/bot/handlers/messages.py:71
 msgid "dont_send_someone_phone_number"
 msgstr "Do not send someone else's phone number!"
 
-#: backend/bot/handlers/messages.py:78
+#: backend/bot/handlers/messages.py:76
 msgid "saved_user_phone"
 msgstr ""
 "Your {phone} number has been saved. In case of registration of service, you "
 "will be contacted by your phone number."
 
-#: backend/bot/handlers/messages.py:86
+#: backend/bot/handlers/messages.py:84
 msgid "unknown_message"
 msgstr "I do not understand the team, try something else."
 
@@ -292,54 +308,54 @@ msgstr "Sa"
 msgid "Su"
 msgstr "Su"
 
-#: backend/models.py:105
+#: backend/models.py:106
 msgid "Monday"
 msgstr "Monday"
 
-#: backend/models.py:106
+#: backend/models.py:107
 msgid "Tuesday"
 msgstr "Tuesday"
 
-#: backend/models.py:107
+#: backend/models.py:108
 msgid "Wednesday"
 msgstr "Wednesday"
 
-#: backend/models.py:108
+#: backend/models.py:109
 msgid "Thursday"
 msgstr "Thursday"
 
-#: backend/models.py:109
+#: backend/models.py:110
 msgid "Friday"
 msgstr "Friday"
 
-#: backend/models.py:110
+#: backend/models.py:111
 msgid "Saturday"
 msgstr "Saturday"
 
-#: backend/models.py:111
+#: backend/models.py:112
 msgid "Sunday"
 msgstr "Sunday"
 
-#: backend/models.py:137
-msgid "simple_text"
-msgstr ""
-
 #: backend/models.py:138
-msgid "alone_order_complete"
-msgstr ""
+msgid "simple_text"
+msgstr "Informative"
 
-#: backend/models.py:152
+#: backend/models.py:139
+msgid "booking"
+msgstr "Booking"
+
+#: backend/models.py:153
 msgid "waiting"
 msgstr "Waiting 🟡"
 
-#: backend/models.py:153
+#: backend/models.py:154
 msgid "accepted"
 msgstr "Accepted 🟢"
 
-#: backend/models.py:154
+#: backend/models.py:155
 msgid "rejected"
 msgstr "Rejected 🔴"
 
-#: backend/models.py:155
+#: backend/models.py:156
 msgid "done"
 msgstr "Done ✅"

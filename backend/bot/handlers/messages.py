@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from telegram import Bot, Update
-from telegram.ext import MessageHandler, Filters, run_async
+from telegram.ext import MessageHandler, Filters
 
 from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
@@ -51,7 +51,6 @@ class CategoriesMessages(BaseMessageHandler):
 class LocationMessages(BaseMessageHandler):
     FILTERS = Filters.location
 
-    @run_async
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         location = update.effective_message.location
         user.options['location'] = {

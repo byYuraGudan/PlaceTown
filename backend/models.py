@@ -136,7 +136,7 @@ class ServiceType(models.Model):
 class Service(models.Model):
     SERVICE_TYPE = [
         (0, _('simple_text')),
-        (1, _('alone_order_complete'))
+        (1, _('booking'))
     ]
     performer = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
     type = models.SmallIntegerField(choices=SERVICE_TYPE)
