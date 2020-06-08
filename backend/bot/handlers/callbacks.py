@@ -239,7 +239,7 @@ class CreateOrderCallback(BaseCallbackQueryHandler):
             query.answer(_('not_info_about_services_of_company'))
             return False
 
-        if Order.objects.filter(service=service).exclude(status__in=[2, 3]).exists():
+        if Order.objects.filter(service=service, service__type_id=1).exclude(status__in=[2, 3]).exists():
             query.answer(_('service_was_early_booking'))
             return False
         markup = update.effective_message.reply_markup
@@ -273,7 +273,7 @@ class ServiceCompanyCallback(BaseCallbackQueryHandler):
             query.answer(_('not_info_about_services_of_company'))
             CompanyDetailCallback.callback(self, bot, update, user, {'id': service.performer.id})
             return False
-        if Order.objects.filter(service=service).exclude(status__in=[2, 3]).exists():
+        if Order.objects.filter(service=service, service__type_id=1).exclude(status__in=[2, 3]).exists():
             query.answer(_('service_was_early_booking'))
             return False
         buttons = [
@@ -293,7 +293,7 @@ class ServicesPaginatorCallback(BaseCallbackQueryHandler):
         user.activate()
         query = update.callback_query
         services = Service.objects.filter(performer_id=data['cid']).values('id', 'name').order_by('name')
-        excluding_services = Order.objects.filter(service__performer_id=data['cid'], service__type=1) \
+        excluding_services = Order.objects.filter(service__performer_id=data['cid'], service__type_id=1) \
             .exclude(status__in=[2, 3]).values('service_id')
         if excluding_services.exists():
             services = services.exclude(id__in=excluding_services)
