@@ -8,7 +8,7 @@ from telegram.ext import MessageHandler, Filters
 
 from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
-from backend.models import TelegramUser, Category
+from backend.models import TelegramUser, Category, Order
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,35 @@ class CategoriesMessages(BaseMessageHandler):
             page_callback=callbacks.CategoriesCallback, callback_data_keys=['cid']
         )
         update.effective_message.reply_text(_('choose_category'), reply_markup=paginator.inline_markup)
+
+
+class MyProfileMessages(BaseMessageHandler):
+    FILTERS = bot_filters.RegexFilter('^', 'my_profile')
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        pass
+
+
+class OutgoingOrdersMessage(BaseMessageHandler):
+    FILTERS = bot_filters.RegexFilter('^', 'outgoing_orders')
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser):
+        from backend.bot import pagination
+        orders = Order.objects.filter(customer=user) \
+            .exclude(status__in=[2, 3]) \
+            .values('id', 'status', 'service__name') \
+            .order_by('-updated')
+
+        if not orders:
+            update.effective_message.reply_text(_('not_info_about_available_orders'))
+            return False
+
+        paginator = pagination.CallbackPaginator(
+            orders, callback=callbacks.OutgoingOrderDetailCallback, page_callback=callbacks.OutgoingOrderCallback,
+            title_pattern=lambda x: f"{Order.STATUS_EMOJI_DICT.get(x['status'])} {x['service__name']}",
+            callback_data_keys=['id'],
+        )
+        update.effective_message.reply_text(_('choose_order'), reply_markup=paginator.inline_markup)
 
 
 class LocationMessages(BaseMessageHandler):

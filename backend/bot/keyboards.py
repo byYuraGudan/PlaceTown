@@ -3,8 +3,7 @@ import datetime
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, \
-    ReplyKeyboardRemove
+from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
 from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback, FilterCallback
 from backend.models import TelegramUser, Company
@@ -25,9 +24,11 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
 def main_menu(user):
     keyboards = [
         KeyboardButton(_('categories')),
+        KeyboardButton(_('my_profile')),
         KeyboardButton(_('get_location'), request_location=True),
+        KeyboardButton(_('outgoing_orders')),
     ]
-    return ReplyKeyboardMarkup(build_menu(keyboards, cols=1), resize_keyboard=True)
+    return ReplyKeyboardMarkup(build_menu(keyboards, cols=2), resize_keyboard=True)
 
 
 def language(user: TelegramUser):
@@ -39,46 +40,10 @@ def language(user: TelegramUser):
     return InlineKeyboardMarkup(build_menu(buttons))
 
 
-def back_btn(user, callback, **extra_data):
-    return [[
-        InlBtn(user.get_translate('back'), callback_data=callback.set_callback_data(st='back', **extra_data))
-    ]]
-
-
 def site_btn():
     return InlineKeyboardMarkup(build_menu([
         InlBtn(_('site_url'), url=settings.SITE_HOST)
     ]))
-
-
-def gen_inline_markup(data, callback, title=None, keys=None, cols=2, extra_data=None):
-    extra_data = extra_data or {}
-    keys = keys or ['id', 'back_data']
-    title = title or 'title'
-    keyboards = []
-    for value in data:
-        data_value = {k: v for k, v in value.items() if k in keys}
-        callback_data = callback.set_callback_data(**data_value, **extra_data)
-        keyboards.append(InlBtn(value[title], callback_data=callback_data))
-    return InlineKeyboardMarkup(build_menu(keyboards, cols=cols))
-
-
-def gen_selected_inline_markup(user, data, callback, back_callback, cols=2, back_data=None, extra_data=None):
-    keys = ('id',)
-    inline_markup = gen_inline_markup(data, callback, keys=keys, cols=cols)
-    footer_keyboards = [
-    ]
-    inline_markup.inline_keyboard.extend(build_menu(footer_keyboards))
-    return inline_markup
-
-
-def gen_metrics_inline_markup(user, data, callback, back_callback, cols=2, back_data=None, extra_data=None):
-    keys = ('id',)
-    inline_markup = gen_inline_markup(data, callback, keys=keys, cols=cols)
-    footer_keyboards = [
-    ]
-    inline_markup.inline_keyboard.extend(build_menu(footer_keyboards, cols=1))
-    return inline_markup
 
 
 def generate_calendar(user, callback, year=None, month=None, date_from=None, date_to=None):

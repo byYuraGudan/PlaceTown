@@ -17,7 +17,7 @@ class BasePaginator:
     last_page_label = '{} »'
     current_page_label = '·{}·'
 
-    def __init__(self, data, page: int = 1, page_size: int = PAGE_SIZE, title_pattern='{name}'):
+    def __init__(self, data, page: int = 1, page_size: int = PAGE_SIZE, title_pattern=lambda x: x['name']):
         self._data = data
 
         assert page > 0, 'Page must more than 0'
@@ -43,7 +43,7 @@ class CallbackPaginator(BasePaginator):
     def __init__(
             self, data, callback, page_callback,
             page: int = 1, page_size: int = PAGE_SIZE,
-            title_pattern='{name}', callback_data_keys: List[str] = None,
+            title_pattern=lambda x: x['name'], callback_data_keys: List[str] = None,
             page_params: dict = None, data_params: dict = None,
     ):
 
@@ -75,7 +75,7 @@ class CallbackPaginator(BasePaginator):
         for value in self.data:
             keyboard.append(
                 InlineKeyboardButton(
-                    self._title_pattern.format(**value),
+                    self._title_pattern(value),
                     callback_data=self._callback.set_data(
                         **{key: value for key, value in value.items() if key in self._callback_data_keys},
                         **self._data_params,

@@ -156,6 +156,12 @@ class Order(models.Model):
         (3, _('done')),
     ]
     STATUS_DICT = dict(STATUS)
+    STATUS_EMOJI_DICT = {
+        0: '🟡',  # waiting
+        1: '🟢',  # accepted
+        2: '🔴',  # rejected
+        3: '✅',  # done
+    }
     status = models.SmallIntegerField(choices=STATUS, default=0)
     customer = models.ForeignKey(TelegramUser, on_delete=models.PROTECT)
     service = models.ForeignKey(Service, on_delete=models.PROTECT)

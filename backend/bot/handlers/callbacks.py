@@ -146,6 +146,7 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
             query.answer(_('no_info_available'))
             return True
         order.status = int(data['status'])
+        order.updated = timezone.now()
         order.save()
         self.update_order_user(bot, order)
         self.update_performer_order(bot, order)
@@ -495,3 +496,44 @@ class CategoriesCallback(BaseCallbackQueryHandler):
             callback_data_keys=['cid'], data_params={'ct_pg': data.get('page', 1)}
         )
         query.edit_message_text(_('choose_category'), reply_markup=paginator.inline_markup)
+
+
+class OutgoingOrderDetailCallback(BaseCallbackQueryHandler):
+    PATTERN = 'doid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        order = Order.objects.filter(id=data['id']).first()
+        if not order:
+            query.answer(_('no_info_available'))
+            return False
+
+        back_btn = InlBtn(_('back'), callback_data=OutgoingOrderCallback.set_data(**data))
+        query.edit_message_text(
+            OrderStatusCallback.get_user_order_info(order, user),
+            reply_markup=OrderStatusCallback.get_user_order_markup(order, user, back_btn=back_btn)
+        )
+
+
+class OutgoingOrderCallback(BaseCallbackQueryHandler):
+    PATTERN = 'ooid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        from backend.bot import pagination
+        orders = Order.objects.filter(customer=user) \
+            .exclude(status__in=[2, 3]) \
+            .values('id', 'status', 'service__name') \
+            .order_by('-updated')
+
+        if not orders:
+            query.edit_message_text(_('no_info_available'))
+            return False
+
+        paginator = pagination.CallbackPaginator(
+            orders, callback=OutgoingOrderDetailCallback, page_callback=self, page=data.get('page', 1),
+            callback_data_keys=['id'], data_params={'page': data.get('page', 1)},
+            title_pattern=lambda x: f"{Order.STATUS_EMOJI_DICT.get(x['status'])} {x['service__name']}",
+            page_size=1,
+        )
+        query.edit_message_text(_('choose_order'), reply_markup=paginator.inline_markup)
