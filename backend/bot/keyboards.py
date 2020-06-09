@@ -24,10 +24,11 @@ def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
 def main_menu(user):
     keyboards = [
         KeyboardButton(_('categories')),
-        KeyboardButton(_('my_profile')),
         KeyboardButton(_('get_location'), request_location=True),
         KeyboardButton(_('outgoing_orders')),
     ]
+    if hasattr(user, 'profile'):
+        keyboards.insert(1, KeyboardButton(_('my_profile')))
     return ReplyKeyboardMarkup(build_menu(keyboards, cols=2), resize_keyboard=True)
 
 

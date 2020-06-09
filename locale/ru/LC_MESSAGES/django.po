@@ -266,7 +266,7 @@ msgstr "У вас пока нет активных оформленных зак
 
 #: backend/bot/handlers/messages.py:91
 msgid "update_user_location"
-msgstr "📍📍Ваше местонахождение обновлен."
+msgstr "📍Ваше местонахождение обновлен."
 
 #: backend/bot/handlers/messages.py:100
 msgid "dont_send_someone_phone_number"

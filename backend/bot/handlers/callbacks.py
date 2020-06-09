@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _, activate
+from geopy.distance import geodesic
 from telegram import Update, Bot, InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CallbackQueryHandler
 
@@ -431,6 +432,7 @@ class CompaniesCallback(BaseCallbackQueryHandler):
     PATTERN = 'iid'
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        kwargs = {}
         user.activate()
         query = update.callback_query
         from backend.bot import pagination
@@ -445,12 +447,29 @@ class CompaniesCallback(BaseCallbackQueryHandler):
             ).values('performer_id').distinct()
             companies = companies.filter(id__in=open_companies)
 
-        if user.location:
-            # TODO get location
-            pass
+        if user.location and user.filters['nearby']:
+            companies_dict = {}
+            companies_values = Company.objects \
+                .filter(longitude__isnull=False, latitude__isnull=False, category_id=data.get('cid')) \
+                .values('id', 'longitude', 'latitude')
+            companies = companies.filter(id__in=companies_values.values('id').distinct())
+            current_location = (user.location['longitude'], user.location['latitude'])
+            for company in list(companies_values):
+                company_location = (company['longitude'], company['latitude'])
+                distance = round(geodesic(current_location, company_location).kilometers, 2)
+                company['distance'] = distance
+                companies_dict[company['id']] = distance
+
+            companies_values = sorted(companies_values, reverse=False, key=lambda x: x['distance'])
+
+            sorted_checked = models.Case(
+                *[models.When(pk=pk['id'], then=pos) for pos, pk in enumerate(companies_values)]
+            )
+            companies = companies.order_by(sorted_checked)
+            kwargs['title_pattern'] = lambda x: f"{companies_dict.get(x['id'], '-')} km {x['name']}"
 
         order = user.orders.get('by')
-        if order:
+        if order and not user.filters['nearby']:
             if order == 'mark':
                 companies = companies.prefetch_related('grades') \
                     .annotate(mark=models.Avg('grades__mark'))
@@ -487,7 +506,7 @@ class CompaniesCallback(BaseCallbackQueryHandler):
             companies, callback=CompanyDetailCallback, page_callback=self,
             page=data.get('page', 1), callback_data_keys=['id'],
             page_params={'cid': data.get('cid'), 'ct_pg': data.get('ct_pg', 1)},
-            data_params={'cp_pg': data.get('page', 1), 'ct_pg': data.get('ct_pg', 1)}
+            data_params={'cp_pg': data.get('page', 1), 'ct_pg': data.get('ct_pg', 1)}, **kwargs
         )
         markup = paginator.inline_markup
         markup.inline_keyboard.extend(option_keyboards)

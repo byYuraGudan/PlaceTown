@@ -5,7 +5,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 from backend.bot.keyboards import build_menu
 
-PAGE_SIZE = 10
+PAGE_SIZE = 7
 MAX_PAGE_SIZE = 50
 
 
@@ -68,7 +68,7 @@ class CallbackPaginator(BasePaginator):
         else:
             keyboard_page = self._build_multi_pages()
         keyboard_data = self._build_data()
-        self._keyboard = build_menu(keyboard_data, footer_buttons=keyboard_page)
+        self._keyboard = build_menu(keyboard_data, footer_buttons=keyboard_page, cols=1)
 
     def _build_data(self):
         keyboard = []
