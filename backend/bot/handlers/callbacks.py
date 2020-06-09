@@ -459,7 +459,7 @@ class CompaniesCallback(BaseCallbackQueryHandler):
             current_location = (user.location['longitude'], user.location['latitude'])
             for company in list(companies_values):
                 company_location = (company['longitude'], company['latitude'])
-                distance = round(geodesic(current_location, company_location).kilometers, 2)
+                distance = round(geodesic(current_location, company_location).kilometers * 0.8, 2)
                 company['distance'] = distance
                 companies_dict[company['id']] = distance
 
