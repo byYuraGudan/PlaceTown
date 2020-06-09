@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-09 01:23+0300\n"
+"POT-Creation-Date: 2020-06-09 18:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: PlaceTown/settings.py:125
+#: PlaceTown/settings.py:126
 msgid "Ukrainian"
 msgstr "Ukrainian"
 
-#: PlaceTown/settings.py:126
+#: PlaceTown/settings.py:127
 msgid "English"
 msgstr "English"
 
-#: PlaceTown/settings.py:127
+#: PlaceTown/settings.py:128
 msgid "Russian"
 msgstr "Russian"
 
@@ -79,6 +79,7 @@ msgstr "Location of \"{name}\""
 #: backend/bot/handlers/callbacks.py:146 backend/bot/handlers/callbacks.py:285
 #: backend/bot/handlers/callbacks.py:383 backend/bot/handlers/callbacks.py:410
 #: backend/bot/handlers/callbacks.py:508 backend/bot/handlers/callbacks.py:530
+#: backend/bot/handlers/callbacks.py:549 backend/bot/handlers/callbacks.py:571
 msgid "no_info_available"
 msgstr "No information available"
 
@@ -138,7 +139,8 @@ msgstr "📝 Create an order"
 
 #: backend/bot/handlers/callbacks.py:282 backend/bot/handlers/callbacks.py:314
 #: backend/bot/handlers/callbacks.py:376 backend/bot/handlers/callbacks.py:460
-#: backend/bot/handlers/callbacks.py:511
+#: backend/bot/handlers/callbacks.py:511 backend/bot/handlers/callbacks.py:552
+#: backend/bot/handlers/callbacks.py:582
 msgid "back"
 msgstr "⬅️ Back"
 
@@ -212,9 +214,17 @@ msgstr "Sorry, no categories."
 msgid "choose_category"
 msgstr "Choose a category:"
 
-#: backend/bot/handlers/callbacks.py:539 backend/bot/handlers/messages.py:76
+#: backend/bot/handlers/callbacks.py:539 backend/bot/handlers/callbacks.py:584
+#: backend/bot/handlers/messages.py:77
 msgid "choose_order"
 msgstr "Select the order you are interested in:"
+
+#: backend/bot/handlers/callbacks.py:592 backend/bot/handlers/messages.py:55
+msgid "my_profile_data"
+msgstr ""
+"👤 My profile\n"
+"\n"
+"Choose what interests you."
 
 #: backend/bot/handlers/commands.py:34
 msgid "help"
@@ -246,25 +256,25 @@ msgstr "Choose language:"
 msgid "data_filter"
 msgstr "Display information about companies, according to selected filter."
 
-#: backend/bot/handlers/messages.py:68
+#: backend/bot/handlers/messages.py:69
 msgid "not_info_about_available_orders"
 msgstr "You do not have any active orders yet."
 
-#: backend/bot/handlers/messages.py:90
+#: backend/bot/handlers/messages.py:91
 msgid "update_user_location"
 msgstr "Your location has been updated."
 
-#: backend/bot/handlers/messages.py:99
+#: backend/bot/handlers/messages.py:100
 msgid "dont_send_someone_phone_number"
 msgstr "Do not send someone else's phone number!"
 
-#: backend/bot/handlers/messages.py:104
+#: backend/bot/handlers/messages.py:105
 msgid "saved_user_phone"
 msgstr ""
 "Your {phone} number has been saved. In case of registration of service, you "
 "will be contacted by your phone number."
 
-#: backend/bot/handlers/messages.py:112
+#: backend/bot/handlers/messages.py:113
 msgid "unknown_message"
 msgstr "I do not understand the team, try something else."
 
@@ -300,6 +310,10 @@ msgstr "Sorting"
 msgid "get_phone"
 msgstr "📞 My phone number"
 
+#: backend/bot/keyboards.py:118
+msgid "incoming orders"
+msgstr "📥 Incoming Orders"
+
 #: backend/defaults.py:4
 msgid "Mo"
 msgstr "Mo"
@@ -328,54 +342,54 @@ msgstr "Sa"
 msgid "Su"
 msgstr "Su"
 
-#: backend/models.py:106
+#: backend/models.py:108
 msgid "Monday"
 msgstr "Monday"
 
-#: backend/models.py:107
+#: backend/models.py:109
 msgid "Tuesday"
 msgstr "Tuesday"
 
-#: backend/models.py:108
+#: backend/models.py:110
 msgid "Wednesday"
 msgstr "Wednesday"
 
-#: backend/models.py:109
+#: backend/models.py:111
 msgid "Thursday"
 msgstr "Thursday"
 
-#: backend/models.py:110
+#: backend/models.py:112
 msgid "Friday"
 msgstr "Friday"
 
-#: backend/models.py:111
+#: backend/models.py:113
 msgid "Saturday"
 msgstr "Saturday"
 
-#: backend/models.py:112
+#: backend/models.py:114
 msgid "Sunday"
 msgstr "Sunday"
 
-#: backend/models.py:138
+#: backend/models.py:140
 msgid "simple_text"
 msgstr "Informative"
 
-#: backend/models.py:139
+#: backend/models.py:141
 msgid "booking"
 msgstr "Booking"
 
-#: backend/models.py:153
+#: backend/models.py:155
 msgid "waiting"
 msgstr "Waiting 🟡"
 
-#: backend/models.py:154
+#: backend/models.py:156
 msgid "accepted"
 msgstr "Accepted 🟢"
 
-#: backend/models.py:155
+#: backend/models.py:157
 msgid "rejected"
 msgstr "Rejected 🔴"
 
-#: backend/models.py:156
+#: backend/models.py:158
 msgid "done"
 msgstr "Done ✅"

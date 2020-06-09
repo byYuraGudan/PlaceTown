@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'django_telegrambot',
     'django_extensions',
     'backend',
@@ -85,7 +86,7 @@ DATABASES = {
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'd8acpfgb9judk9',
         'USER': 'zoovkqivjgtgbl',
         'PASSWORD': '22fba1b18419124592d209d49a33b6a5b5a9573be4ef6db951242ded61bc9d15',
@@ -161,3 +162,7 @@ DJANGO_TELEGRAMBOT = {
         },
     ],
 }
+
+# GEO
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')

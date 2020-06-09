@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.gis.db.models import PointField
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import activate, gettext
@@ -94,6 +95,7 @@ class Company(models.Model):
     email = models.CharField(max_length=100, blank=True)
     site = models.CharField(max_length=255, blank=True)
 
+    point = PointField(blank=True, null=True)
     longitude = models.FloatField(null=True, blank=True, default=None)
     latitude = models.FloatField(null=True, blank=True, default=None)
 

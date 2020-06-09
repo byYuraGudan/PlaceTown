@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 from telegram import InlineKeyboardButton as InlBtn, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
-from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback, FilterCallback
+from backend.bot.handlers.callbacks import LanguageCallback, GradeCompanyCallback, FilterCallback, IncomingOrderCallback
 from backend.models import TelegramUser, Company
 
 MAX_INLINE_BUTTON = 60
@@ -111,3 +111,10 @@ def settings_markup(user: TelegramUser):
     if not user.phone:
         keyboards.append(KeyboardButton(_('get_phone'), request_contact=True))
     return ReplyKeyboardMarkup(build_menu(keyboards, cols=1))
+
+
+def profile_markup(user: TelegramUser):
+    keyboards = [
+        InlBtn(_('incoming orders'), callback_data=IncomingOrderCallback.set_data())
+    ]
+    return InlineKeyboardMarkup(build_menu(keyboards, cols=1))

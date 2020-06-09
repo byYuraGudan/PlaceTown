@@ -52,7 +52,7 @@ class MyProfileMessages(BaseMessageHandler):
     FILTERS = bot_filters.RegexFilter('^', 'my_profile')
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
-        pass
+        update.effective_message.reply_text(_('my_profile_data'), reply_markup=keyboards.profile_markup(user))
 
 
 class OutgoingOrdersMessage(BaseMessageHandler):

@@ -141,15 +141,29 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
 
     def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
         query = update.callback_query
-        order = Order.objects.filter(id=data['id']).first()
+        order = Order.objects.filter(id=data.pop('id')).first()
         if not order:
             query.answer(_('no_info_available'))
             return True
-        order.status = int(data['status'])
+        order.status = int(data.pop('status'))
         order.updated = timezone.now()
         order.save()
-        self.update_order_user(bot, order)
-        self.update_performer_order(bot, order)
+        user_data, performer_data = {}, {}
+        if data.get('st') == 'outgoing':
+            user_data = {
+                'back_btn': update.effective_message.reply_markup.inline_keyboard[-1:][0],
+                'st': 'outgoing'
+            }
+        elif data.get('st') == 'incoming':
+            performer_data = {
+                'back_btn': update.effective_message.reply_markup.inline_keyboard[-1:][0],
+                'st': 'incoming'
+            }
+        if data.get('st'):
+            update.effective_message.delete()
+
+        self.update_order_user(bot, order, **user_data)
+        self.update_performer_order(bot, order, **performer_data)
 
     @classmethod
     def get_user_order_info(cls, order: Order, user: TelegramUser):
@@ -163,13 +177,13 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
         )
 
     @classmethod
-    def get_user_order_markup(cls, order: Order, user: TelegramUser, back_btn=None):
+    def get_user_order_markup(cls, order: Order, user: TelegramUser, back_btn=None, **kwargs):
         if order.status == 3:
-            return None
+            return InlineKeyboardMarkup(keyboards.build_menu([], footer_buttons=back_btn))
         user.activate()
         keyboard = []
         if order.status != 2:
-            keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2)))
+            keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2, **kwargs)))
         return InlineKeyboardMarkup(keyboards.build_menu(keyboard, footer_buttons=back_btn))
 
     @classmethod
@@ -185,20 +199,20 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
         )
 
     @classmethod
-    def get_order_performer_markup(cls, order: Order, user: TelegramUser, back_btn=None):
+    def get_order_performer_markup(cls, order: Order, user: TelegramUser, back_btn=None, **kwargs):
         if order.status in (2, 3):
-            return None
+            return InlineKeyboardMarkup(keyboards.build_menu([], footer_buttons=back_btn))
         user.activate()
         keyboard = []
         if order.status != 1:
-            keyboard.append(InlBtn(_('accept_order'), callback_data=cls.set_data(id=order.id, status=1)))
+            keyboard.append(InlBtn(_('accept_order'), callback_data=cls.set_data(id=order.id, status=1, **kwargs)))
         if order.status != 3:
-            keyboard.append(InlBtn(_('done_order'), callback_data=cls.set_data(id=order.id, status=3)))
-        keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2)))
+            keyboard.append(InlBtn(_('done_order'), callback_data=cls.set_data(id=order.id, status=3, **kwargs)))
+        keyboard.append(InlBtn(_('reject_order'), callback_data=cls.set_data(id=order.id, status=2, **kwargs)))
         return InlineKeyboardMarkup(keyboards.build_menu(keyboard, footer_buttons=back_btn))
 
     @classmethod
-    def update_order_user(cls, bot: Bot, order: Order):
+    def update_order_user(cls, bot: Bot, order: Order, back_btn=None, **kwargs):
         customer, messages = order.get_customer_and_messages
         for message_id in messages:
             try:
@@ -206,13 +220,13 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
             except:
                 log.error(f'Message {message_id} for chat {customer.id} not found')
         text = cls.get_user_order_info(order, customer)
-        markup = cls.get_user_order_markup(order, customer)
+        markup = cls.get_user_order_markup(order, customer, back_btn, **kwargs)
         message = bot.send_message(chat_id=customer.id, text=text, reply_markup=markup)
         order.options['user_messages'] = [message.message_id]
         order.save()
 
     @classmethod
-    def update_performer_order(cls, bot: Bot, order: Order):
+    def update_performer_order(cls, bot: Bot, order: Order, back_btn=None, **kwargs):
         performer, messages = order.get_performer_and_messages
         for message_id in messages:
             try:
@@ -220,7 +234,7 @@ class OrderStatusCallback(BaseCallbackQueryHandler):
             except:
                 log.error(f'Message {message_id} for chat {performer.id} not found')
         text = cls.get_order_performer_info(order, performer)
-        markup = cls.get_order_performer_markup(order, performer)
+        markup = cls.get_order_performer_markup(order, performer, back_btn, **kwargs)
         message = bot.send_message(chat_id=performer.id, text=text, reply_markup=markup)
         order.options['performer_messages'] = [message.message_id]
         order.save()
@@ -511,7 +525,7 @@ class OutgoingOrderDetailCallback(BaseCallbackQueryHandler):
         back_btn = InlBtn(_('back'), callback_data=OutgoingOrderCallback.set_data(**data))
         query.edit_message_text(
             OrderStatusCallback.get_user_order_info(order, user),
-            reply_markup=OrderStatusCallback.get_user_order_markup(order, user, back_btn=back_btn)
+            reply_markup=OrderStatusCallback.get_user_order_markup(order, user, back_btn=back_btn, st='outgoing')
         )
 
 
@@ -537,3 +551,55 @@ class OutgoingOrderCallback(BaseCallbackQueryHandler):
             page_size=1,
         )
         query.edit_message_text(_('choose_order'), reply_markup=paginator.inline_markup)
+
+
+class IncomingOrderDetailCallback(BaseCallbackQueryHandler):
+    PATTERN = 'dioid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        order = Order.objects.filter(id=data['id']).first()
+        if not order:
+            query.answer(_('no_info_available'))
+            return False
+
+        back_btn = InlBtn(_('back'), callback_data=IncomingOrderCallback.set_data(**data))
+        query.edit_message_text(
+            OrderStatusCallback.get_order_performer_info(order, user),
+            reply_markup=OrderStatusCallback.get_order_performer_markup(order, user, back_btn=back_btn, st='incoming')
+        )
+
+
+class IncomingOrderCallback(BaseCallbackQueryHandler):
+    PATTERN = 'ioid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        from backend.bot import pagination
+        orders = Order.objects.filter(service__performer__profile=user.profile) \
+            .exclude(status__in=[2, 3]) \
+            .values('id', 'status', 'service__name') \
+            .order_by('-updated')
+
+        if not orders:
+            query.edit_message_text(_('no_info_available'))
+            return False
+
+        paginator = pagination.CallbackPaginator(
+            orders, callback=IncomingOrderDetailCallback, page_callback=self, page=data.get('page', 1),
+            callback_data_keys=['id'], data_params={'page': data.get('page', 1)},
+            title_pattern=lambda x: f"{Order.STATUS_EMOJI_DICT.get(x['status'])} {x['service__name']}",
+        )
+        markup = paginator.inline_markup
+        markup.inline_keyboard.append([
+            InlBtn(_('back'), callback_data=MyProfileCallback.set_data()),
+        ])
+        query.edit_message_text(_('choose_order'), reply_markup=markup)
+
+
+class MyProfileCallback(BaseCallbackQueryHandler):
+    PATTERN = 'pfid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        query.edit_message_text(_('my_profile_data'), reply_markup=keyboards.profile_markup(user))
