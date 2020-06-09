@@ -61,7 +61,7 @@ class OutgoingOrdersMessage(BaseMessageHandler):
     def callback(self, bot: Bot, update: Update, user: TelegramUser):
         from backend.bot import pagination
         orders = Order.objects.filter(customer=user) \
-            .exclude(status__in=[2, 3]) \
+            .exclude(status__in=user.order_filter_status) \
             .values('id', 'status', 'service__name') \
             .order_by('-updated')
 

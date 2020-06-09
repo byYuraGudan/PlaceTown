@@ -91,6 +91,9 @@ class FilterCallback(BaseCallbackQueryHandler):
                 orders['by'] = order
             user.options['orders'] = orders
             update.effective_message.edit_reply_markup(reply_markup=keyboards.filter_markup(user))
+        if data.get('filter'):
+            user.options['filters'][data.get('filter')] = not user.filters.get(data.get('filter'), False)
+            update.effective_message.edit_reply_markup(reply_markup=keyboards.filter_markup(user))
         user.save()
 
 
@@ -555,7 +558,7 @@ class OutgoingOrderCallback(BaseCallbackQueryHandler):
         query = update.callback_query
         from backend.bot import pagination
         orders = Order.objects.filter(customer=user) \
-            .exclude(status__in=[2, 3]) \
+            .exclude(status__in=user.order_filter_status) \
             .values('id', 'status', 'service__name') \
             .order_by('-updated')
 
@@ -567,7 +570,6 @@ class OutgoingOrderCallback(BaseCallbackQueryHandler):
             orders, callback=OutgoingOrderDetailCallback, page_callback=self, page=data.get('page', 1),
             callback_data_keys=['id'], data_params={'page': data.get('page', 1)},
             title_pattern=lambda x: f"{Order.STATUS_EMOJI_DICT.get(x['status'])} {x['service__name']}",
-            page_size=1,
         )
         query.edit_message_text(_('choose_order'), reply_markup=paginator.inline_markup)
 
@@ -596,13 +598,9 @@ class IncomingOrderCallback(BaseCallbackQueryHandler):
         query = update.callback_query
         from backend.bot import pagination
         orders = Order.objects.filter(service__performer__profile=user.profile) \
-            .exclude(status__in=[2, 3]) \
+            .exclude(status__in=user.order_filter_status) \
             .values('id', 'status', 'service__name') \
             .order_by('-updated')
-
-        if not orders:
-            query.edit_message_text(_('no_info_available'))
-            return False
 
         paginator = pagination.CallbackPaginator(
             orders, callback=IncomingOrderDetailCallback, page_callback=self, page=data.get('page', 1),

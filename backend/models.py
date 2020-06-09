@@ -51,7 +51,9 @@ class TelegramUser(models.Model):
 
     @property
     def filters(self):
-        return self.options.setdefault('filters', {'open': False, 'nearby': False})
+        return self.options.setdefault(
+            'filters', {'open': False, 'nearby': False, 'show_done': False, 'show_rejected': True}
+        )
 
     @property
     def orders(self):
@@ -60,6 +62,15 @@ class TelegramUser(models.Model):
     @property
     def location(self):
         return self.options.get('location', {})
+
+    @property
+    def order_filter_status(self):
+        status = []
+        if not self.filters.get('show_done'):
+            status.append(3)
+        if not self.filters.get('show_rejected'):
+            status.append(2)
+        return status
 
 
 class Category(MPTTModel, models.Model):

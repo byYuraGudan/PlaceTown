@@ -100,6 +100,14 @@ def filter_markup(user: TelegramUser):
         InlBtn(
             _('sorting') + (' 🔽' if user.orders.get('sorting', True) else ' 🔼'),
             callback_data=FilterCallback.set_data(order='sorting')
+        ),
+        InlBtn(
+            _('show_rejected_order') + (' ✅' if user.filters.get('show_rejected', False) else ''),
+            callback_data=FilterCallback.set_data(filter='show_rejected')
+        ),
+        InlBtn(
+            _('show_done_order') + (' ✅' if user.filters.get('show_done', False) else ''),
+            callback_data=FilterCallback.set_data(filter='show_done')
         )
     ]
     return InlineKeyboardMarkup(build_menu(keyboard, cols=1))
