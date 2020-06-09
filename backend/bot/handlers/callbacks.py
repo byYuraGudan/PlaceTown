@@ -136,7 +136,7 @@ class CompanyLocationCallback(BaseCallbackQueryHandler):
         if not company.latitude and company.longitude:
             update.effective_message.reply_text(_('company_has_not_info_location'))
             return
-        update.effective_message.reply_location(company.longitude, company.latitude)
+        update.effective_message.reply_location(company.latitude, company.longitude)
         query.answer(_('location_of_company').format(name=company.name))
 
 
