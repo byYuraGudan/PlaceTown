@@ -462,13 +462,13 @@ class CompaniesCallback(BaseCallbackQueryHandler):
                 distance = round(geodesic(current_location, company_location).kilometers * 0.8, 2)
                 company['distance'] = distance
                 companies_dict[company['id']] = distance
+            if companies_values:
+                companies_values = sorted(companies_values, reverse=False, key=lambda x: x['distance'])
 
-            companies_values = sorted(companies_values, reverse=False, key=lambda x: x['distance'])
-
-            sorted_checked = models.Case(
-                *[models.When(pk=pk['id'], then=pos) for pos, pk in enumerate(companies_values)]
-            )
-            companies = companies.order_by(sorted_checked)
+                sorted_checked = models.Case(
+                    *[models.When(pk=pk['id'], then=pos) for pos, pk in enumerate(companies_values)]
+                )
+                companies = companies.order_by(sorted_checked)
             kwargs['title_pattern'] = lambda x: f"{companies_dict.get(x['id'], '-')} km {x['name']}"
 
         order = user.orders.get('by')
