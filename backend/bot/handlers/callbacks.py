@@ -76,7 +76,8 @@ class FilterCallback(BaseCallbackQueryHandler):
                     query.answer(_('must_update_location'))
                     return False
                 location_update = timezone.datetime.strptime(user.location.get('last_update'), '%d-%m-%y %H:%M')
-                if divmod((timezone.now().replace(tzinfo=None) - location_update).total_seconds(), 60)[0] > 10:
+                if divmod((timezone.now().replace(tzinfo=None) - location_update).total_seconds(), 60)[0] > 10 and \
+                        not user.filters['nearby']:
                     query.answer(_('must_update_location'))
                     return False
                 user.options['filters']['nearby'] = not user.filters['nearby']
