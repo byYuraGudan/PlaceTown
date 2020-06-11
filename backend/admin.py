@@ -1,7 +1,10 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.urls import resolve
 
 from backend import models as back_models
+
+admin.site.unregister(Group)
 
 
 class CustomTabularInline(admin.TabularInline):
@@ -49,9 +52,9 @@ class TelegramUserAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(back_models.ServiceType)
-class ServiceTypeAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(back_models.ServiceType)
+# class ServiceTypeAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(back_models.Service)

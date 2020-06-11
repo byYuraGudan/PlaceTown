@@ -12,6 +12,7 @@ NAME_LENGTH = 200
 
 
 class User(AbstractUser):
+
     objects = UserManager()
 
 
@@ -72,16 +73,26 @@ class TelegramUser(models.Model):
             status.append(2)
         return status
 
+    class Meta:
+        verbose_name = _('telegram_user')
+        verbose_name_plural = _('telegram_users')
+
 
 class Category(MPTTModel, models.Model):
     name = models.CharField(max_length=NAME_LENGTH)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = TreeForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', editable=False
+    )
 
     description = models.TextField(blank=True, null=True)
     hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name} - {self.id}'
+
+    class Meta:
+        verbose_name = _('_category')
+        verbose_name_plural = _('_categories')
 
 
 class Profile(models.Model):
@@ -93,6 +104,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.id}'
+
+    class Meta:
+        verbose_name = _('_profile')
+        verbose_name_plural = _('_profiles')
 
 
 class Company(models.Model):
@@ -106,12 +121,16 @@ class Company(models.Model):
     email = models.CharField(max_length=100, blank=True)
     site = models.CharField(max_length=255, blank=True)
 
-    point = PointField(blank=True, null=True)
+    point = PointField(blank=True, null=True, editable=False)
     longitude = models.FloatField(null=True, blank=True, default=None)
     latitude = models.FloatField(null=True, blank=True, default=None)
 
     def __str__(self):
         return f'{self.name} - {self.id}'
+
+    class Meta:
+        verbose_name = _('_company')
+        verbose_name_plural = _('_companies')
 
 
 class TimeWork(models.Model):
@@ -135,15 +154,17 @@ class TimeWork(models.Model):
         return f'{self.WEEK_DAYS_DICT.get(self.week_day)}, {self.start_time} - {self.end_time}'
 
     class Meta:
+        verbose_name = _('_time_work')
+        verbose_name_plural = _('_time_works')
         unique_together = ('performer', 'week_day', 'is_lunch')
 
 
-class ServiceType(models.Model):
-    name = models.CharField(max_length=NAME_LENGTH)
-    hidden = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f'{self.name}'
+# class ServiceType(models.Model):
+#     name = models.CharField(max_length=NAME_LENGTH)
+#     hidden = models.BooleanField(default=True)
+#
+#     def __str__(self):
+#         return f'{self.name}'
 
 
 class Service(models.Model):
@@ -159,6 +180,10 @@ class Service(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    class Meta:
+        verbose_name = _('_service')
+        verbose_name_plural = _('_services')
 
 
 class Order(models.Model):
@@ -194,6 +219,10 @@ class Order(models.Model):
     def get_performer_and_messages(self):
         return self.service.performer.profile.user, self.options.setdefault('performer_messages', [])
 
+    class Meta:
+        verbose_name = _('_order')
+        verbose_name_plural = _('_orders')
+
 
 class Grade(models.Model):
     reviewer_user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='grades')
@@ -203,6 +232,8 @@ class Grade(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = _('_grade')
+        verbose_name_plural = _('_grades')
         unique_together = ('reviewer_user', 'company',)
 
     def __str__(self):
@@ -215,3 +246,7 @@ class Comment(models.Model):
 
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('_order')
+        verbose_name_plural = _('_orders')
