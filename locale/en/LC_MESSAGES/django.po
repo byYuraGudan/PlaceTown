@@ -236,7 +236,10 @@ msgstr "Help"
 
 #: backend/bot/handlers/commands.py:41
 msgid "start"
-msgstr "Hello {}"
+msgstr "Hello, {} 😊! I'm a PlaceTown bot. My goal is to show you all the "
+"interesting establishments of our city, so that it is convenient for you to "
+"view information about them and even choose services. I'm always in touch😉. "
+"Have a nice day! 🌤 PS .. you look great😏🖤"
 
 #: backend/bot/handlers/commands.py:48
 msgid "settings"
