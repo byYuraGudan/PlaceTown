@@ -232,7 +232,12 @@ msgstr ""
 
 #: backend/bot/handlers/commands.py:34
 msgid "help"
-msgstr "Help"
+msgstr "Help \n"
+"This bot allows you to view information about establishments,"
+"filter data on the schedule of work or establishments nearby, sort by popularity - /filters."
+"Dogs are also given the opportunity to add their own data, to do this, "
+"create a profile and administer your data on the site - /profile."
+"You can choose the services, the design of which will immediately notify the institutions."
 
 #: backend/bot/handlers/commands.py:41
 msgid "start"
