@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'PlaceTown.midlleware.AdminLocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'PlaceTown.urls'
@@ -122,13 +123,15 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
+ADMIN_LANGUAGE_CODE = 'uk'
+
 LANGUAGES = (
-    ('uk', _('Ukrainian')),
     ('en', _('English')),
+    ('uk', _('Ukrainian')),
     ('ru', _('Russian')),
 )
 
-LANGUAGE_CODE = 'uk'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Kiev'
 
