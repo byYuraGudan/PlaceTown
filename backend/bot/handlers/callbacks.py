@@ -445,7 +445,7 @@ class CompaniesCallback(BaseCallbackQueryHandler):
             time_now = timezone.now()
             open_companies = TimeWork.objects.filter(
                 performer__category_id=data.get('cid'),
-                week_day=time_now.day - 1,
+                week_day=time_now.weekday(),
                 start_time__lte=time_now,
                 end_time__gte=time_now,
             ).values('performer_id').distinct()
