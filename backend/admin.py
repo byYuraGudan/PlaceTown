@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.urls import resolve
+from django_telegrambot.apps import DjangoTelegramBot
+from telegram.ext import JobQueue
 
 from backend import models as back_models
+from backend.bot import job_callbacks
 
 admin.site.unregister(Group)
 
@@ -47,14 +50,14 @@ class GradeInline(CustomTabularInline):
     fk_name = 'company'
 
 
+class NewsInline(CustomTabularInline):
+    model = back_models.News
+    fk_name = 'company'
+
+
 @admin.register(back_models.TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
     pass
-
-
-# @admin.register(back_models.ServiceType)
-# class ServiceTypeAdmin(admin.ModelAdmin):
-#     pass
 
 
 @admin.register(back_models.Service)
@@ -99,7 +102,7 @@ class GradeAdmin(admin.ModelAdmin):
 @admin.register(back_models.Company)
 class CompanyAdmin(admin.ModelAdmin):
     inlines = [
-        ServiceInline, TimeWorkTabular, GradeInline
+        ServiceInline, TimeWorkTabular, NewsInline, GradeInline
     ]
 
     def get_queryset(self, request):
@@ -118,6 +121,19 @@ class CompanyAdmin(admin.ModelAdmin):
         if hasattr(request.user, 'profile') and not request.user.is_superuser:
             obj.profile = request.user.profile
         super(CompanyAdmin, self).save_model(request, obj, form, change)
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save()
+        if issubclass(formset.model, back_models.News):
+            dp = DjangoTelegramBot.dispatcher
+            job_queue = dp.job_queue
+            for instance in instances:
+                self.notification(job_queue, instance)
+
+    @staticmethod
+    def notification(job: JobQueue, news: back_models.News):
+        when = 5 if not news.notification else news.notification
+        job.run_once(job_callbacks.notification_user_news, when=when, context=news)
 
 
 @admin.register(back_models.Category)

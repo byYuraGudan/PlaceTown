@@ -159,12 +159,13 @@ class TimeWork(models.Model):
         unique_together = ('performer', 'week_day', 'is_lunch')
 
 
-# class ServiceType(models.Model):
-#     name = models.CharField(max_length=NAME_LENGTH)
-#     hidden = models.BooleanField(default=True)
-#
-#     def __str__(self):
-#         return f'{self.name}'
+class WatchCompanyTelegramUser(models.Model):
+    telegram_user = models.ForeignKey(TelegramUser, related_name='watches', on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, related_name='watches', on_delete=models.CASCADE)
+    watch = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('telegram_user', 'company')
 
 
 class Service(models.Model):
@@ -184,6 +185,20 @@ class Service(models.Model):
     class Meta:
         verbose_name = _('_service')
         verbose_name_plural = _('_services')
+
+
+class News(models.Model):
+    company = models.ForeignKey(Company, related_name='news', on_delete=models.CASCADE)
+
+    title = models.CharField(max_length=254, null=False)
+    description = models.TextField(blank=False, null=False)
+    notification = models.DateTimeField(blank=True, null=True)
+    date_from = models.DateField(blank=True, null=True)
+    date_to = models.DateField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('_news')
+        verbose_name_plural = _('_more_news')
 
 
 class Order(models.Model):

@@ -10,7 +10,8 @@ from telegram import Update, Bot, InlineKeyboardButton as InlBtn, InlineKeyboard
 from telegram.ext import CallbackQueryHandler
 
 from backend.bot import keyboards
-from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile, Grade, Order
+from backend.models import TelegramUser, Category, Company, TimeWork, Service, User, Profile, Grade, Order, News, \
+    WatchCompanyTelegramUser
 
 log = logging.getLogger(__name__)
 
@@ -361,6 +362,60 @@ class GradeCompanyCallback(BaseCallbackQueryHandler):
         query.edit_message_text(_('grade_the_company'), reply_markup=keyboards.grade_buttons(company))
 
 
+class NewsDetailCallback(BaseCallbackQueryHandler):
+    PATTERN = 'nid'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        query = update.callback_query
+        news = News.objects.filter(id=data.pop('id')).first()
+        if not news:
+            query.answer(_('not_info_about_news_of_company'))
+            CompanyDetailCallback.callback(self, bot, update, user, {'cid': data.get('cid')})
+            return False
+
+        buttons = [
+            InlBtn(_('back'), callback_data=ServicesPaginatorCallback.set_data(page=data.pop('s_pg'), **data))
+        ]
+        query.edit_message_text(
+            _('about_service').format(name=news.title, description=news.description or _('no_info_available')),
+            reply_markup=InlineKeyboardMarkup(keyboards.build_menu(buttons, cols=1))
+        )
+
+
+class NewsPaginatorCallback(BaseCallbackQueryHandler):
+    PATTERN = 'news'
+
+    def callback(self, bot: Bot, update: Update, user: TelegramUser, data: dict):
+        user.activate()
+        query = update.callback_query
+        date_from_filters = models.Q(date_from__lte=timezone.now()) | models.Q(date_from__isnull=True)
+        date_to_filters = models.Q(date_to__gte=timezone.now()) | models.Q(date_to__isnull=True)
+        news = News.objects.filter(company_id=data['cid']) \
+            .filter(date_from_filters).filter(date_to_filters) \
+            .values('id', 'title') \
+            .order_by('-notification')
+
+        if not news:
+            query.answer(_('not_info_about_news_of_company'))
+            CompanyDetailCallback.callback(self, bot, update, user, {'id': data.get('cid')})
+            return False
+
+        from backend.bot import pagination
+
+        paginator = pagination.CallbackPaginator(
+            news, NewsDetailCallback, self, page=data.get('page', 1), title_pattern=lambda x: x['title'],
+            page_params={'cid': data['cid']}, data_params={'cid': data['cid'], 's_pg': data.get('page', 1)}
+        )
+        markup = paginator.inline_markup
+        back_btn = [
+            InlBtn(
+                _('back'),
+                callback_data=CompanyDetailCallback.set_data(id=data.get('cid'), page=data.get('ct_pg', 1))),
+        ]
+        markup.inline_keyboard.append(back_btn)
+        query.edit_message_text(_('choose_news_of_company'), reply_markup=markup)
+
+
 class CompanyDetailCallback(BaseCallbackQueryHandler):
     PATTERN = 'did'
 
@@ -372,6 +427,9 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
         if not company:
             query.edit_message_text(_('not_info_about_company'))
             return False
+
+        if not WatchCompanyTelegramUser.objects.filter(company=company, telegram_user=user).exists():
+            WatchCompanyTelegramUser.objects.create(company=company, telegram_user=user)
 
         keyboard, markup = [], None
 
@@ -389,6 +447,13 @@ class CompanyDetailCallback(BaseCallbackQueryHandler):
         if company.services.exists():
             callback = ServicesPaginatorCallback.set_data(cid=company.id, ct_pg=data.get('ct_pg', 1))
             keyboard.append(InlBtn(_('services'), callback_data=callback))
+
+        date_from_filters = models.Q(date_from__lte=timezone.now()) | models.Q(date_from__isnull=True)
+        date_to_filters = models.Q(date_to__gte=timezone.now()) | models.Q(date_to__isnull=True)
+
+        if company.news.filter(date_from_filters).filter(date_to_filters).exists():
+            callback = NewsPaginatorCallback.set_data(cid=company.id, ct_pg=data.get('ct_pg', 1))
+            keyboard.append(InlBtn(_('news'), callback_data=callback))
 
         from backend.bot.keyboards import build_menu
         back_btn = InlBtn(

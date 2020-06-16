@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-11 21:37+0300\n"
+"POT-Creation-Date: 2020-06-16 21:58+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,15 +20,15 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: PlaceTown/settings.py:126
-msgid "Ukrainian"
-msgstr "Украинский"
-
-#: PlaceTown/settings.py:127
+#: PlaceTown/settings.py:129
 msgid "English"
 msgstr "Английский"
 
-#: PlaceTown/settings.py:128
+#: PlaceTown/settings.py:130
+msgid "Ukrainian"
+msgstr "Украинский"
+
+#: PlaceTown/settings.py:131
 msgid "Russian"
 msgstr "Русский"
 
@@ -36,27 +36,27 @@ msgstr "Русский"
 msgid "backend"
 msgstr "Настройка информации"
 
-#: backend/bot/handlers/callbacks.py:60
+#: backend/bot/handlers/callbacks.py:61
 msgid "your_lang"
 msgstr "Выбран {} язык"
 
-#: backend/bot/handlers/callbacks.py:61
+#: backend/bot/handlers/callbacks.py:62
 msgid "select_you_interested"
 msgstr "Выберите что вас интересует"
 
-#: backend/bot/handlers/callbacks.py:73 backend/bot/handlers/callbacks.py:487
+#: backend/bot/handlers/callbacks.py:74 backend/bot/handlers/callbacks.py:552
 msgid "open_company"
 msgstr "⏱ Открытые заведения"
 
-#: backend/bot/handlers/callbacks.py:76 backend/bot/handlers/callbacks.py:81
+#: backend/bot/handlers/callbacks.py:77 backend/bot/handlers/callbacks.py:82
 msgid "must_update_location"
 msgstr "📍Оновить ваше местоположение!"
 
-#: backend/bot/handlers/callbacks.py:84 backend/bot/handlers/callbacks.py:491
+#: backend/bot/handlers/callbacks.py:85 backend/bot/handlers/callbacks.py:556
 msgid "nearby_company"
 msgstr "🧭 Заведения рядом"
 
-#: backend/bot/handlers/callbacks.py:120
+#: backend/bot/handlers/callbacks.py:121
 msgid "user_created_info"
 msgstr ""
 "Создан аккаунт, позволяет добавлять новые данные для просмотра другими "
@@ -65,32 +65,32 @@ msgstr ""
 "<b>Логин:</b> {username}\n"
 "<b>Пароль:</b> {password}"
 
-#: backend/bot/handlers/callbacks.py:125 backend/bot/handlers/commands.py:61
+#: backend/bot/handlers/callbacks.py:126 backend/bot/handlers/commands.py:61
 msgid "profile_exists"
 msgstr ""
 "У вас уже есть существующий профиль. Авторизуйтесь по ссылке ниже для "
 "администрировании своих данных."
 
-#: backend/bot/handlers/callbacks.py:135
+#: backend/bot/handlers/callbacks.py:136
 msgid "company_doesnt_exists"
 msgstr "Информация о заведении отсутствует."
 
-#: backend/bot/handlers/callbacks.py:138
+#: backend/bot/handlers/callbacks.py:139
 msgid "company_has_not_info_location"
 msgstr "К сожалению заведение не указал местонахождения."
 
-#: backend/bot/handlers/callbacks.py:141
+#: backend/bot/handlers/callbacks.py:142
 msgid "location_of_company"
 msgstr "Местонахождение \"{name}\""
 
-#: backend/bot/handlers/callbacks.py:151 backend/bot/handlers/callbacks.py:304
-#: backend/bot/handlers/callbacks.py:402 backend/bot/handlers/callbacks.py:429
-#: backend/bot/handlers/callbacks.py:545 backend/bot/handlers/callbacks.py:567
-#: backend/bot/handlers/callbacks.py:585
+#: backend/bot/handlers/callbacks.py:152 backend/bot/handlers/callbacks.py:305
+#: backend/bot/handlers/callbacks.py:380 backend/bot/handlers/callbacks.py:467
+#: backend/bot/handlers/callbacks.py:494 backend/bot/handlers/callbacks.py:610
+#: backend/bot/handlers/callbacks.py:632 backend/bot/handlers/callbacks.py:650
 msgid "no_info_available"
 msgstr "Нет данных"
 
-#: backend/bot/handlers/callbacks.py:176
+#: backend/bot/handlers/callbacks.py:177
 msgid "created_order_user_info"
 msgstr ""
 "📌: {status} \n"
@@ -101,11 +101,11 @@ msgstr ""
 "Заведение: {company} \n"
 "Услуга: {service}"
 
-#: backend/bot/handlers/callbacks.py:191 backend/bot/handlers/callbacks.py:216
+#: backend/bot/handlers/callbacks.py:192 backend/bot/handlers/callbacks.py:217
 msgid "reject_order"
 msgstr "🔴 Отклонить заказ"
 
-#: backend/bot/handlers/callbacks.py:197
+#: backend/bot/handlers/callbacks.py:198
 msgid "create_order_performer_info"
 msgstr ""
 "📌: {status} \n"
@@ -117,116 +117,129 @@ msgstr ""
 "Заведение: {company} \n"
 "Услуга: {service}"
 
-#: backend/bot/handlers/callbacks.py:213
+#: backend/bot/handlers/callbacks.py:214
 msgid "accept_order"
 msgstr "🟢 Принять заказ"
 
-#: backend/bot/handlers/callbacks.py:215
+#: backend/bot/handlers/callbacks.py:216
 msgid "done_order"
 msgstr "✅ Выполнено"
 
-#: backend/bot/handlers/callbacks.py:254 backend/bot/handlers/callbacks.py:255
+#: backend/bot/handlers/callbacks.py:255 backend/bot/handlers/callbacks.py:256
 msgid "must_set_user_phone"
 msgstr ""
 "Для оформления услуг, нужно обновить контактные данные для того, чтобы с "
 "вами могли связаться."
 
-#: backend/bot/handlers/callbacks.py:259 backend/bot/handlers/callbacks.py:293
-#: backend/bot/handlers/callbacks.py:321
+#: backend/bot/handlers/callbacks.py:260 backend/bot/handlers/callbacks.py:294
+#: backend/bot/handlers/callbacks.py:322
 msgid "not_info_about_services_of_company"
 msgstr "Нет информации о данном услугах даного заведения."
 
-#: backend/bot/handlers/callbacks.py:263 backend/bot/handlers/callbacks.py:297
+#: backend/bot/handlers/callbacks.py:264 backend/bot/handlers/callbacks.py:298
 msgid "service_was_early_booking"
 msgstr "Простите, услуги уже забронировали."
 
-#: backend/bot/handlers/callbacks.py:300
+#: backend/bot/handlers/callbacks.py:301
 msgid "create_order"
 msgstr "📝 Создать заказ"
 
-#: backend/bot/handlers/callbacks.py:301 backend/bot/handlers/callbacks.py:333
-#: backend/bot/handlers/callbacks.py:395 backend/bot/handlers/callbacks.py:497
-#: backend/bot/handlers/callbacks.py:548 backend/bot/handlers/callbacks.py:588
-#: backend/bot/handlers/callbacks.py:613
+#: backend/bot/handlers/callbacks.py:302 backend/bot/handlers/callbacks.py:334
+#: backend/bot/handlers/callbacks.py:377 backend/bot/handlers/callbacks.py:412
+#: backend/bot/handlers/callbacks.py:460 backend/bot/handlers/callbacks.py:562
+#: backend/bot/handlers/callbacks.py:613 backend/bot/handlers/callbacks.py:653
+#: backend/bot/handlers/callbacks.py:678
 msgid "back"
 msgstr "⬅️ Назад"
 
-#: backend/bot/handlers/callbacks.py:304
+#: backend/bot/handlers/callbacks.py:305 backend/bot/handlers/callbacks.py:380
 msgid "about_service"
 msgstr ""
 "Название: {name} \n"
 "Описание: {description}"
 
-#: backend/bot/handlers/callbacks.py:337
+#: backend/bot/handlers/callbacks.py:338
 msgid "choose_services_of_company"
 msgstr "Выберите услугу:"
 
-#: backend/bot/handlers/callbacks.py:348 backend/bot/handlers/callbacks.py:373
+#: backend/bot/handlers/callbacks.py:349 backend/bot/handlers/callbacks.py:428
 msgid "not_info_about_company"
 msgstr "Нет информации о данном заведение. Выберите другое заведение."
 
-#: backend/bot/handlers/callbacks.py:353
+#: backend/bot/handlers/callbacks.py:354
 msgid "your_mark_company_is"
 msgstr "Ваша оценка {mark} ⭐️"
 
-#: backend/bot/handlers/callbacks.py:358
+#: backend/bot/handlers/callbacks.py:359
 msgid "you_are_grade_the_company"
 msgstr "Вы уже оценивали данное заведение."
 
-#: backend/bot/handlers/callbacks.py:361
+#: backend/bot/handlers/callbacks.py:362
 msgid "grade_the_company"
 msgstr "Оцените заведение от 1 до 5 ⭐️"
 
-#: backend/bot/handlers/callbacks.py:379 backend/bot/keyboards.py:46
+#: backend/bot/handlers/callbacks.py:372 backend/bot/handlers/callbacks.py:399
+msgid "not_info_about_news_of_company"
+msgstr "Нет информации о данной новости даного заведения."
+
+#: backend/bot/handlers/callbacks.py:416
+msgid "choose_news_of_company"
+msgstr "Выберите новость:"
+
+#: backend/bot/handlers/callbacks.py:437 backend/bot/keyboards.py:46
 msgid "site_url"
 msgstr "🌐 Ссылки на сайт"
 
-#: backend/bot/handlers/callbacks.py:383
+#: backend/bot/handlers/callbacks.py:441
 msgid "location"
 msgstr "📍 Местонахождение"
 
-#: backend/bot/handlers/callbacks.py:387
+#: backend/bot/handlers/callbacks.py:445
 msgid "grade"
 msgstr "⭐️Оценить"
 
-#: backend/bot/handlers/callbacks.py:391
+#: backend/bot/handlers/callbacks.py:449
 msgid "services"
 msgstr "📝 Услуги"
 
-#: backend/bot/handlers/callbacks.py:401
+#: backend/bot/handlers/callbacks.py:456
+msgid "news"
+msgstr "📑 Новости"
+
+#: backend/bot/handlers/callbacks.py:466
 msgid "about_company"
 msgstr ""
 "<b>Назва:</b> {name} \n"
 "<b>Описание:</b> {description}"
 
-#: backend/bot/handlers/callbacks.py:415
+#: backend/bot/handlers/callbacks.py:480
 msgid "work_schedule"
 msgstr "<b>📅 График работы: </b>"
 
-#: backend/bot/handlers/callbacks.py:504
+#: backend/bot/handlers/callbacks.py:569
 msgid "not_choose_performer_for_current_category"
 msgstr ""
 "Нет информации о заведениях данной категории. Попробуйте выбрать другую "
 "категорию."
 
-#: backend/bot/handlers/callbacks.py:517
+#: backend/bot/handlers/callbacks.py:582
 msgid "choose_company"
 msgstr "Выберите заведение:"
 
-#: backend/bot/handlers/callbacks.py:528 backend/bot/handlers/messages.py:41
+#: backend/bot/handlers/callbacks.py:593 backend/bot/handlers/messages.py:43
 msgid "not_choose_categories"
 msgstr "К сожалению нет ни одной категории."
 
-#: backend/bot/handlers/callbacks.py:535 backend/bot/handlers/messages.py:48
+#: backend/bot/handlers/callbacks.py:600 backend/bot/handlers/messages.py:50
 msgid "choose_category"
 msgstr "Выберите категорию:"
 
-#: backend/bot/handlers/callbacks.py:575 backend/bot/handlers/callbacks.py:615
-#: backend/bot/handlers/messages.py:77
+#: backend/bot/handlers/callbacks.py:640 backend/bot/handlers/callbacks.py:680
+#: backend/bot/handlers/messages.py:79
 msgid "choose_order"
 msgstr "Выберите заказ, который вас интересует:"
 
-#: backend/bot/handlers/callbacks.py:623 backend/bot/handlers/messages.py:55
+#: backend/bot/handlers/callbacks.py:688 backend/bot/handlers/messages.py:57
 msgid "my_profile_data"
 msgstr ""
 "👤 Мой профиль\n"
@@ -235,18 +248,22 @@ msgstr ""
 
 #: backend/bot/handlers/commands.py:34
 msgid "help"
-msgstr "Помощь\n"
-"Єтим Ботом можно просматривать информацию о заведениях, фильтровать данные по графику работы или заведение рядом"
-", сортировать по популярности - /filters."
-"Также собами предоставляется возможность добавлять собственные данные, "
-"для этого создайте профиль и администрирует свои данные на сайте - /profile."
-"Можно выбирать услуги, при оформлении которых будут сразу оповещать заведения."
+msgstr ""
+"Помощь\n"
+"Єтим Ботом можно просматривать информацию о заведениях, фильтровать данные "
+"по графику работы или заведение рядом, сортировать по популярности - /"
+"filters.Также собами предоставляется возможность добавлять собственные "
+"данные, для этого создайте профиль и администрирует свои данные на сайте - /"
+"profile.Можно выбирать услуги, при оформлении которых будут сразу оповещать "
+"заведения."
 
 #: backend/bot/handlers/commands.py:41
 msgid "start"
-msgstr "Привет, {} 😊! Я бот PlaceTown 😎. Моя цель - показать тебе все интересные "
-"заведения нашего города, так чтобы тебе было удобно просмотры информацию о них и "
-"даже выбирать услуги. Я всегда на связи 😉. Хорошего тебе дня! 🌤 ПС .. ты прекрасно выглядишь 😏🖤"
+msgstr ""
+"Привет, {} 😊! Я бот PlaceTown 😎. Моя цель - показать тебе все интересные "
+"заведения нашего города, так чтобы тебе было удобно просмотры информацию о "
+"них и даже выбирать услуги. Я всегда на связи 😉. Хорошего тебе дня! 🌤 ПС .. "
+"ты прекрасно выглядишь 😏🖤"
 
 #: backend/bot/handlers/commands.py:48
 msgid "settings"
@@ -271,27 +288,38 @@ msgstr "Выберите язык:"
 msgid "data_filter"
 msgstr "Отображение информации о заведениях, по выбранным фильтрами."
 
-#: backend/bot/handlers/messages.py:69
+#: backend/bot/handlers/messages.py:71
 msgid "not_info_about_available_orders"
 msgstr "У вас пока нет активных оформленных заказов."
 
-#: backend/bot/handlers/messages.py:91
+#: backend/bot/handlers/messages.py:93
 msgid "update_user_location"
 msgstr "📍Ваше местонахождение обновлен."
 
-#: backend/bot/handlers/messages.py:100
+#: backend/bot/handlers/messages.py:102
 msgid "dont_send_someone_phone_number"
 msgstr "Не отправляйте чужой номер телефона!"
 
-#: backend/bot/handlers/messages.py:105
+#: backend/bot/handlers/messages.py:107
 msgid "saved_user_phone"
 msgstr ""
 "Номер {phone} сохранен. В случае оформления услуги, с вами свяжутся по "
 "вашему номеру телефона."
 
-#: backend/bot/handlers/messages.py:113
+#: backend/bot/handlers/messages.py:118
 msgid "unknown_message"
 msgstr "Непонятная команда, попробуйте что-то другое."
+
+#: backend/bot/job_callbacks.py:16
+msgid "company"
+msgstr "Заведение"
+
+#: backend/bot/job_callbacks.py:18
+msgid "notification_news"
+msgstr "📮<b>Новость ({time_news})</b>\n\n"
+"<b>Тема:</b> {title}\n"
+"<b>Детали:</b> {description}\n\n"
+"<b>Автор:</b> {company}"
 
 #: backend/bot/keyboards.py:26
 msgid "categories"
@@ -373,111 +401,119 @@ msgstr "Телеграм пользователь"
 msgid "telegram_users"
 msgstr "Телеграм пользователи"
 
-#: backend/models.py:92
+#: backend/models.py:94
 msgid "_category"
 msgstr "Категория"
 
-#: backend/models.py:93
+#: backend/models.py:95
 msgid "_categories"
 msgstr "Категории"
 
-#: backend/models.py:107
+#: backend/models.py:109
 msgid "_profile"
 msgstr "Профиль"
 
-#: backend/models.py:108
+#: backend/models.py:110
 msgid "_profiles"
 msgstr "Профили"
 
-#: backend/models.py:130
+#: backend/models.py:132
 msgid "_company"
 msgstr "Заведение"
 
-#: backend/models.py:131
+#: backend/models.py:133
 msgid "_companies"
 msgstr "Заведения"
 
-#: backend/models.py:136
+#: backend/models.py:138
 msgid "Monday"
 msgstr "Понедельник"
 
-#: backend/models.py:137
+#: backend/models.py:139
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: backend/models.py:138
+#: backend/models.py:140
 msgid "Wednesday"
 msgstr "Среда"
 
-#: backend/models.py:139
+#: backend/models.py:141
 msgid "Thursday"
 msgstr "Четверг"
 
-#: backend/models.py:140
+#: backend/models.py:142
 msgid "Friday"
 msgstr "Пятница"
 
-#: backend/models.py:141
+#: backend/models.py:143
 msgid "Saturday"
 msgstr "Субота"
 
-#: backend/models.py:142
+#: backend/models.py:144
 msgid "Sunday"
 msgstr "Воскресение"
 
-#: backend/models.py:155
+#: backend/models.py:157
 msgid "_time_work"
 msgstr "Робочее время"
 
-#: backend/models.py:156
+#: backend/models.py:158
 msgid "_time_works"
 msgstr "Робочее время"
 
-#: backend/models.py:170
+#: backend/models.py:173
 msgid "simple_text"
 msgstr "Информативный"
 
-#: backend/models.py:171
+#: backend/models.py:174
 msgid "booking"
 msgstr "Бронирование"
 
-#: backend/models.py:183
+#: backend/models.py:186
 msgid "_service"
 msgstr "📝Услуга"
 
-#: backend/models.py:184
+#: backend/models.py:187
 msgid "_services"
 msgstr "Услуги"
 
-#: backend/models.py:189
+#: backend/models.py:200
+msgid "_news"
+msgstr "Новость"
+
+#: backend/models.py:201
+msgid "_more_news"
+msgstr "Новости"
+
+#: backend/models.py:206
 msgid "waiting"
 msgstr "Ожидания 🟡"
 
-#: backend/models.py:190
+#: backend/models.py:207
 msgid "accepted"
 msgstr "Принято 🟢"
 
-#: backend/models.py:191
+#: backend/models.py:208
 msgid "rejected"
 msgstr "Отвергнуто 🔴"
 
-#: backend/models.py:192
+#: backend/models.py:209
 msgid "done"
 msgstr "Сделанно ✅"
 
-#: backend/models.py:221 backend/models.py:249
+#: backend/models.py:238 backend/models.py:266
 msgid "_order"
 msgstr "Заказ"
 
-#: backend/models.py:222 backend/models.py:250
+#: backend/models.py:239 backend/models.py:267
 msgid "_orders"
 msgstr "Заказы"
 
-#: backend/models.py:233
+#: backend/models.py:250
 msgid "_grade"
 msgstr "Оценка"
 
-#: backend/models.py:234
+#: backend/models.py:251
 msgid "_grades"
 msgstr "Оценки"
 

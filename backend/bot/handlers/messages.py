@@ -3,12 +3,14 @@ import logging
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django_telegrambot.apps import DjangoTelegramBot
 from telegram import Bot, Update
 from telegram.ext import MessageHandler, Filters
 
+from backend.admin import CompanyAdmin
 from backend.bot import filters as bot_filters, keyboards
 from backend.bot.handlers import callbacks
-from backend.models import TelegramUser, Category, Order
+from backend.models import TelegramUser, Category, Order, News
 
 logger = logging.getLogger(__name__)
 
