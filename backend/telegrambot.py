@@ -21,6 +21,8 @@ def main():
     if not dp.job_queue:
         job_queue = JobQueue(dp.bot)
         job_queue.set_dispatcher(dp)
+        dp.job_queue = job_queue
+    print(dp.job_queue)
     init_handler(dp, all_commands, all_messages, all_callback_queries)
     dp.add_handler(unknown_message)
     dp.add_error_handler(error_handlers.error)
