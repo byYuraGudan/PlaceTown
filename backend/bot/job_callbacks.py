@@ -9,6 +9,8 @@ def notification_user_news(bot: Bot, job: Job):
     from backend.bot.handlers.callbacks import CompanyDetailCallback
 
     news = job.context
+    print('Start Notification news {}!!'.format(news.title))
+
     if not news.notification_users:
         job.schedule_removal()
         return

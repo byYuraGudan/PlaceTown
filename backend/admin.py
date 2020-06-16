@@ -129,6 +129,7 @@ class CompanyAdmin(admin.ModelAdmin):
             for instance in instances:
                 if not instance.notification_users:
                     continue
+                print('Set notification news {}'.format(instance.title))
                 dp.job_queue.run_once(job_callbacks.notification_user_news, when=10, context=instance)
             dp.job_queue.start()
 
