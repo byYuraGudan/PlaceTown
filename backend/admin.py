@@ -127,7 +127,9 @@ class CompanyAdmin(admin.ModelAdmin):
         if issubclass(formset.model, back_models.News):
             dp = DjangoTelegramBot.dispatcher
             if not dp.job_queue:
-                dp.job_queue = JobQueue(dp.bot)
+                job_queue = JobQueue(dp.bot)
+                job_queue.set_dispatcher(dp)
+                dp.job_queue = job_queue
             for instance in instances:
                 self.notification(dp.job_queue, instance)
 
