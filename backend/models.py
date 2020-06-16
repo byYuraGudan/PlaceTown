@@ -196,6 +196,8 @@ class News(models.Model):
     date_from = models.DateField(blank=True, null=True)
     date_to = models.DateField(blank=True, null=True)
 
+    created = models.DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = _('_news')
         verbose_name_plural = _('_more_news')

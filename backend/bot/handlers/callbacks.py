@@ -374,7 +374,7 @@ class NewsDetailCallback(BaseCallbackQueryHandler):
             return False
 
         buttons = [
-            InlBtn(_('back'), callback_data=ServicesPaginatorCallback.set_data(page=data.pop('s_pg'), **data))
+            InlBtn(_('back'), callback_data=NewsPaginatorCallback.set_data(page=data.pop('s_pg'), **data))
         ]
         query.edit_message_text(
             _('about_service').format(name=news.title, description=news.description or _('no_info_available')),
@@ -393,7 +393,7 @@ class NewsPaginatorCallback(BaseCallbackQueryHandler):
         news = News.objects.filter(company_id=data['cid']) \
             .filter(date_from_filters).filter(date_to_filters) \
             .values('id', 'title') \
-            .order_by('-notification')
+            .order_by('-created')
 
         if not news:
             query.answer(_('not_info_about_news_of_company'))
