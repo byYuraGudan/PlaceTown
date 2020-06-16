@@ -126,17 +126,11 @@ class CompanyAdmin(admin.ModelAdmin):
         instances = formset.save()
         if issubclass(formset.model, back_models.News):
             dp = DjangoTelegramBot.dispatcher
-            if not dp.job_queue:
-                job_queue = JobQueue(dp.bot)
-                job_queue.set_dispatcher(dp)
-                dp.job_queue = job_queue
             for instance in instances:
-                self.notification(dp.job_queue, instance)
-
-    @staticmethod
-    def notification(job: JobQueue, news: back_models.News):
-        when = 5 if not news.notification else news.notification
-        job.run_once(job_callbacks.notification_user_news, when=when, context=news)
+                if not instance.notification_users:
+                    continue
+                dp.job_queue.run_once(job_callbacks.notification_user_news, when=10, context=instance)
+            dp.job_queue.start()
 
 
 @admin.register(back_models.Category)

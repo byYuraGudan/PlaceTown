@@ -192,7 +192,7 @@ class News(models.Model):
 
     title = models.CharField(max_length=254, null=False)
     description = models.TextField(blank=False, null=False)
-    notification = models.DateTimeField(blank=True, null=True)
+    notification_users = models.BooleanField(blank=True, default=False)
     date_from = models.DateField(blank=True, null=True)
     date_to = models.DateField(blank=True, null=True)
 

@@ -471,7 +471,7 @@ msgstr "Бронирование"
 
 #: backend/models.py:186
 msgid "_service"
-msgstr "📝Услуга"
+msgstr "Услуга"
 
 #: backend/models.py:187
 msgid "_services"

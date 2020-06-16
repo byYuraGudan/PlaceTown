@@ -9,7 +9,7 @@ def notification_user_news(bot: Bot, job: Job):
     from backend.bot.handlers.callbacks import CompanyDetailCallback
 
     news = job.context
-    if not (news.date_from >= timezone.now().date() <= news.date_to):
+    if not news.notification_users:
         job.schedule_removal()
         return
 
